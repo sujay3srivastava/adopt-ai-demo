@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab0 · Adopt AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="print.css" media="print">
+</head>
+<body>
+
+<!-- Four-color stripe -->
+<div class="stripe">
+  <div style="background:var(--O)"></div>
+  <div style="background:var(--B)"></div>
+  <div style="background:var(--Y)"></div>
+  <div style="background:var(--P)"></div>
+</div>
+
+<!-- Global Nav -->
+<nav class="global-nav">
+  <div class="gn-inner">
+    <div class="gn-left">
+      <div class="gn-squares">
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff5203"/></svg>
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#0364ff"/></svg>
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#f7d241"/></svg>
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ffc0f5"/></svg>
+      </div>
+      Lab0
+      <span class="gn-sep">&nbsp;·&nbsp;</span>
+      <span class="gn-sub">Adopt AI</span>
+    </div>
+    <div class="gn-right">
+      <div class="avatar-badge">AS</div>
+      <span>Anirudh S.</span>
+      <button class="gear-btn" title="Settings" onclick="goTo('view-user-control')">&#9881;</button>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  VIEW 1: Admin Dashboard                                -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="view-admin" class="view">
+<div class="page-wrap">
+
+  <div class="sec-hd-row">
+    <h1 class="page-h1">All Engagements</h1>
+    <button class="btn" onclick="void(0)">+ New Engagement</button>
+  </div>
+  <p class="page-sub">7 active engagements &nbsp;·&nbsp; 2 pending gates this month</p>
+
+  <!-- Ornamental SVG divider -->
+  <svg class="orn-rule" height="18" viewBox="0 0 1020 18" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="9.5" x2="946" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="950" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="968" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="986" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="1004" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- Cards grid — populated by loadEngagements() -->
+  <div class="cards-grid">
+
+    <!-- Card 1: Spendflo (static fallback, replaced by JS) -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">Spendflo</div>
+          <div class="status-chip">
+            <svg width="8" height="8" viewBox="0 0 8 8" class="pulse"><rect width="8" height="8" fill="#ff5203"/></svg>
+            Active
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Anirudh S.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">FDE</span>
+          <span>Rahul M.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Start</span>
+          <span>Jan 5, 2026</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span>Jul 5, 2026</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn" onclick="openEngagement('11111111-1111-1111-1111-111111111111')">View Project</button>
+          <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Doola -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">Doola</div>
+          <div class="status-chip">
+            <svg width="8" height="8" viewBox="0 0 8 8" class="pulse"><rect width="8" height="8" fill="#ff5203"/></svg>
+            Active
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Krishna P.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">FDE</span>
+          <span>Priya K.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Start</span>
+          <span>Feb 1, 2026</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span>Apr 30, 2026</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn" onclick="openEngagement('22222222-2222-2222-2222-222222222222')">View Project</button>
+          <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: TechCorp POC -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">TechCorp POC</div>
+          <div class="status-chip" style="border-color:var(--P);">
+            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
+            Pre-pilot
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Anirudh S.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">FDE</span>
+          <span>Rahul M.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Start</span>
+          <span>Mar 1, 2026</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span>Jun 1, 2026</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn" onclick="openEngagement('33333333-3333-3333-3333-333333333333')">View Project</button>
+          <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+</div><!-- /page-wrap -->
+</div><!-- /view-admin -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  VIEW 2: Project BRD Tab                                -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="view-project" class="view">
+<div class="page-wrap-project">
+
+  <!-- Project Header -->
+  <div class="breadcrumb">
+    <button class="breadcrumb-btn" onclick="goTo('view-admin')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All Engagements
+    </button>
+  </div>
+  <div class="proj-top">
+    <div class="proj-left">
+      <div class="proj-company">
+        Spendflo
+        <div class="proj-status-inline">
+          <svg width="12" height="12" viewBox="0 0 12 12" class="pulse"><rect width="12" height="12" fill="#ff5203"/></svg>
+          On Track
+        </div>
+        <span class="proj-period">Month 4 of 6 &nbsp;·&nbsp; Gate: Jul 5</span>
+      </div>
+      <div class="proj-subtitle">Conversational Procurement Co-pilot &nbsp;·&nbsp; 6-Month Pilot</div>
+      <div class="proj-meta-row">
+        <div class="team-badges">
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--O);">AS</div>
+            <div class="badge-tooltip">Anirudh S.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--B);">RM</div>
+            <div class="badge-tooltip">Rahul M.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--Y);color:var(--ink);">PK</div>
+            <div class="badge-tooltip">Priya K.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--P);color:var(--ink);">KP</div>
+            <div class="badge-tooltip">Krishna P.</div>
+          </div>
+        </div>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+      </div>
+    </div>
+  </div>
+  <div class="tabs-row">
+    <button class="tab-btn active" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
+    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
+  </div>
+  <!-- /Project Header -->
+
+  <!-- BRD Colophon -->
+  <div class="mt-24">
+    <div class="lab0-colophon">
+      <div class="lab0-mark">
+        <svg width="48" height="14" viewBox="0 0 48 14">
+          <rect x="0" y="2" width="10" height="10" fill="#ff5203"/>
+          <rect x="13" y="2" width="10" height="10" fill="#0364ff"/>
+          <rect x="26" y="2" width="10" height="10" fill="#f7d241"/>
+          <rect x="39" y="2" width="10" height="10" fill="#ffc0f5"/>
+        </svg>
+        <span class="lm-name">Lab0 Intelligence Platform</span>
+      </div>
+      <div class="lab0-sources">
+        <span class="src">
+          <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ff5203"/></svg>
+          Fireflies &nbsp;·&nbsp; Discovery call, Jan 3
+        </span>
+        <span class="src">
+          <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#0364ff"/></svg>
+          Slack &nbsp;·&nbsp; Kickoff thread
+        </span>
+        <span class="src">
+          <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#f7d241"/></svg>
+          Jira &nbsp;·&nbsp; Project scaffolding
+        </span>
+      </div>
+      <div class="lab0-timing">
+        Drafted in <strong>6m 04s</strong> &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; Jan 5, 2026
+      </div>
+    </div>
+    <div class="colophon-action">
+      <a href="adopt-euclid.html" target="_blank" class="colophon-link">View Full Document &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Ornamental divider -->
+  <svg class="orn-rule" height="18" viewBox="0 0 840 18" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="9.5" x2="766" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="770" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="788" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="806" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="824" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- Section 1: Engagement Overview -->
+  <div class="sec-heading">
+    <div class="sec-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20">
+        <rect x="0" y="0" width="10" height="10" fill="#ff5203"/>
+        <rect x="10" y="0" width="10" height="10" fill="#0364ff"/>
+        <rect x="0" y="10" width="10" height="10" fill="#f7d241"/>
+        <rect x="10" y="10" width="10" height="10" fill="#ffc0f5"/>
+      </svg>
+    </div>
+    <div>
+      <span class="sec-num">Section 1</span>
+      <div class="sec-title">Engagement Overview</div>
+    </div>
+  </div>
+  <div class="info-grid">
+    <div class="ig-cell"><span class="ig-label">Client</span><span class="ig-val">Spendflo Inc.</span></div>
+    <div class="ig-cell"><span class="ig-label">Champion</span><span class="ig-val">Yash Kothari</span></div>
+    <div class="ig-cell"><span class="ig-label">Champion Title</span><span class="ig-val">Head of Product</span></div>
+    <div class="ig-cell"><span class="ig-label">Exec Sponsor</span><span class="ig-val">Spendflo CEO</span></div>
+    <div class="ig-cell"><span class="ig-label">Engagement Lead</span><span class="ig-val">Anirudh S.</span></div>
+    <div class="ig-cell"><span class="ig-label">FDE Lead</span><span class="ig-val">Rahul M.</span></div>
+    <div class="ig-cell"><span class="ig-label">Contract</span><span class="ig-val">6-Month Pilot</span></div>
+    <div class="ig-cell"><span class="ig-label">Start</span><span class="ig-val">Jan 5, 2026</span></div>
+    <div class="ig-cell" style="border-bottom:none;"><span class="ig-label">Month 3 Gate</span><span class="ig-val">Apr 5, 2026 &nbsp;<span style="color:var(--O);">&#10003; Passed</span></span></div>
+    <div class="ig-cell" style="border-bottom:none;"><span class="ig-label">Month 6 Gate</span><span class="ig-val">Jul 5, 2026</span></div>
+    <div class="ig-cell" style="border-bottom:none;border-right:none;"></div>
+    <div class="ig-cell" style="border-bottom:none;border-right:none;"></div>
+  </div>
+
+  <!-- Section 2: Business Objectives -->
+  <div class="sec-heading">
+    <div class="sec-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20">
+        <rect x="0" y="0" width="10" height="10" fill="#0364ff"/>
+        <rect x="10" y="0" width="10" height="10" fill="#ff5203"/>
+        <rect x="0" y="10" width="10" height="10" fill="#ffc0f5"/>
+        <rect x="10" y="10" width="10" height="10" fill="#f7d241"/>
+      </svg>
+    </div>
+    <div>
+      <span class="sec-num">Section 2</span>
+      <div class="sec-title">Business Objectives</div>
+    </div>
+    <button class="sec-edit-btn" data-section="objectives">&#9998;</button>
+  </div>
+  <div id="sec-objectives">
+    <div class="obj-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-top:5px;"><rect width="14" height="14" fill="#ff5203"/></svg>
+      <div>
+        <div class="obj-title">Replace Manual Navigation with Conversational AI</div>
+        <div class="obj-desc">Co-pilot must answer procurement queries in natural language within 10 seconds.</div>
+      </div>
+    </div>
+    <div class="obj-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-top:5px;"><rect width="14" height="14" fill="#0364ff"/></svg>
+      <div>
+        <div class="obj-title">Full RBAC Compliance Across Multi-Tenant Architecture</div>
+        <div class="obj-desc">Zero cross-role data exposure across all user types.</div>
+      </div>
+    </div>
+    <div class="obj-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-top:5px;"><rect width="14" height="14" fill="#f7d241"/></svg>
+      <div>
+        <div class="obj-title">Drive Adoption: Co-pilot Displaces Traditional Navigation</div>
+        <div class="obj-desc">Target: &gt;40% of routine queries via co-pilot by Month 6.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Delivery Plan -->
+  <div class="sec-heading">
+    <div class="sec-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20">
+        <rect x="0" y="0" width="10" height="10" fill="#f7d241"/>
+        <rect x="10" y="0" width="10" height="10" fill="#ffc0f5"/>
+        <rect x="0" y="10" width="10" height="10" fill="#ff5203"/>
+        <rect x="10" y="10" width="10" height="10" fill="#0364ff"/>
+      </svg>
+    </div>
+    <div>
+      <span class="sec-num">Section 3</span>
+      <div class="sec-title">Delivery Plan</div>
+    </div>
+    <button class="sec-edit-btn" data-section="delivery_plan">&#9998;</button>
+  </div>
+  <div id="sec-delivery_plan">
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Phase</th>
+            <th>Key Activities</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Jan 2026</td>
+            <td>Foundation &amp; Integration</td>
+            <td>REST API, RBAC, agent config</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+          </tr>
+          <tr>
+            <td>Feb 2026</td>
+            <td>QA &amp; Release Hardening</td>
+            <td>Full QA suite, SOP docs, staging sign-off</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+          </tr>
+          <tr>
+            <td>Mar 2026</td>
+            <td>Production Launch</td>
+            <td>Go-live, pilot cohort, baseline metrics</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+          </tr>
+          <tr>
+            <td>Apr 2026</td>
+            <td>CRUD Expansion</td>
+            <td>Procurement + contract creation, power user flows</td>
+            <td><span class="sts status-inprog"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#0364ff"/></svg>In Progress</span></td>
+          </tr>
+          <tr>
+            <td>May 2026</td>
+            <td>Optimisation</td>
+            <td>Eval tuning, additional use cases</td>
+            <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
+          </tr>
+          <tr>
+            <td>Jun 2026</td>
+            <td>Evaluation &amp; Renewal</td>
+            <td>Retrospective, ROI measurement, renewal</td>
+            <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Success Metrics -->
+  <div class="sec-heading">
+    <div class="sec-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20">
+        <rect x="0" y="0" width="10" height="10" fill="#ffc0f5"/>
+        <rect x="10" y="0" width="10" height="10" fill="#f7d241"/>
+        <rect x="0" y="10" width="10" height="10" fill="#0364ff"/>
+        <rect x="10" y="10" width="10" height="10" fill="#ff5203"/>
+      </svg>
+    </div>
+    <div>
+      <span class="sec-num">Section 4</span>
+      <div class="sec-title">Success Metrics</div>
+    </div>
+    <button class="sec-edit-btn" data-section="success_metrics">&#9998;</button>
+  </div>
+  <div id="sec-success_metrics">
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Target</th>
+            <th>Current</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Co-pilot WAU</td>
+            <td>&gt;30% of users</td>
+            <td>23% WAU</td>
+            <td><span class="sts status-watch"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#f7d241"/></svg>Watch</span></td>
+          </tr>
+          <tr>
+            <td>Navigation Shift</td>
+            <td>&gt;40% by Month 6</td>
+            <td>18% shift</td>
+            <td><span class="sts status-ontrack"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff5203"/></svg>On track</span></td>
+          </tr>
+          <tr>
+            <td>Response Time</td>
+            <td>&lt;1.5s</td>
+            <td>1.1s</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+          </tr>
+          <tr>
+            <td>Eval Pass Rate</td>
+            <td>&#8805;93% Month 3</td>
+            <td>93.2%</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+          </tr>
+          <tr>
+            <td>Thumbs-Down Rate</td>
+            <td>&lt;3%</td>
+            <td>1.8%</td>
+            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page-wrap-project -->
+</div><!-- /view-project -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  VIEW 3: Activity Tab                                    -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="view-comms" class="view">
+<div class="page-wrap-project">
+
+  <!-- Project Header -->
+  <div class="breadcrumb">
+    <button class="breadcrumb-btn" onclick="goTo('view-admin')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All Engagements
+    </button>
+  </div>
+  <div class="proj-top">
+    <div class="proj-left">
+      <div class="proj-company">
+        Spendflo
+        <div class="proj-status-inline">
+          <svg width="12" height="12" viewBox="0 0 12 12" class="pulse"><rect width="12" height="12" fill="#ff5203"/></svg>
+          On Track
+        </div>
+        <span class="proj-period">Month 4 of 6 &nbsp;·&nbsp; Gate: Jul 5</span>
+      </div>
+      <div class="proj-subtitle">Conversational Procurement Co-pilot &nbsp;·&nbsp; 6-Month Pilot</div>
+      <div class="proj-meta-row">
+        <div class="team-badges">
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--O);">AS</div>
+            <div class="badge-tooltip">Anirudh S.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--B);">RM</div>
+            <div class="badge-tooltip">Rahul M.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--Y);color:var(--ink);">PK</div>
+            <div class="badge-tooltip">Priya K.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--P);color:var(--ink);">KP</div>
+            <div class="badge-tooltip">Krishna P.</div>
+          </div>
+        </div>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+      </div>
+    </div>
+  </div>
+  <div class="tabs-row">
+    <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
+    <button class="tab-btn active" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
+  </div>
+  <!-- /Project Header -->
+
+  <!-- Activity top bar -->
+  <div class="mt-24">
+    <div class="comms-topbar">
+      <div class="comms-left">
+        <span>Activity since last report</span>
+        <span class="week-badge">Week 13 &nbsp;·&nbsp; Apr 11, 2026</span>
+      </div>
+      <div class="comms-right">
+        <span>67 items ingested</span>
+        <div class="filter-chips">
+          <button class="chip active">All</button>
+          <button class="chip">
+            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#ff5203"/></svg>Fireflies
+          </button>
+          <button class="chip">
+            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#0364ff"/></svg>Slack
+          </button>
+          <button class="chip">
+            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#ffc0f5"/></svg>Loom
+          </button>
+          <button class="chip">
+            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#f7d241"/></svg>Jira
+          </button>
+        </div>
+      </div>
+    </div>
+    <p class="comms-note">Lab0 has pre-selected items for the next report. Uncheck to exclude.</p>
+    <div class="comm-counter" id="comm-counter">8 items &nbsp;·&nbsp; 7 selected &nbsp;·&nbsp; 1 excluded</div>
+  </div>
+
+  <!-- Activity Feed — populated by loadActivities() -->
+  <div id="comm-feed">
+
+    <!-- Item 1 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Fireflies &nbsp;·&nbsp; Weekly Sync &nbsp;·&nbsp; Apr 14</div>
+        <div class="comm-headline">Yash confirmed contract record creation is the #1 priority.</div>
+        <div class="comm-text">Yash Kothari confirmed contract record creation is the #1 priority for the month. Requested a live demo before Apr 30. Flagged bulk procurement as a future ask.</div>
+        <div class="comm-meta">Attendees: Anirudh S., Rahul M., Yash Kothari &nbsp;·&nbsp; 28 min</div>
+      </div>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Jira &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Created Apr 14</div>
+        <div class="comm-headline">CRUD: Contract Record Creation — implementation started.</div>
+        <div class="comm-text">CRUD: Contract Record Creation ticket created and implementation started.</div>
+        <div class="comm-meta">Sprint: Month 4 &nbsp;·&nbsp; Assignee: Rahul M. &nbsp;·&nbsp; Due Apr 18</div>
+      </div>
+    </div>
+
+    <!-- Item 3 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Slack &nbsp;·&nbsp; #spendflo-fde &nbsp;·&nbsp; Apr 14, 2:34 PM</div>
+        <div class="comm-headline">Contract record spec finalized and approved.</div>
+        <div class="comm-text">Rahul M.: "Contract record spec finalized and approved. Starting implementation — targeting production by Apr 17."</div>
+        <div class="comm-meta">Bengaluru &nbsp;·&nbsp; reacted by Anirudh S.</div>
+      </div>
+    </div>
+
+    <!-- Item 4 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ffc0f5"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Loom &nbsp;·&nbsp; Apr 15 &nbsp;·&nbsp; Priya K. &nbsp;·&nbsp; 4:12</div>
+        <div class="comm-headline">Eval suite update — CRUD contract record scenarios.</div>
+        <div class="comm-text">12 new test cases covering multi-role access and error states added to the eval suite.</div>
+        <div class="comm-meta"><span class="loom-link">Watch (4:12)</span></div>
+      </div>
+    </div>
+
+    <!-- Item 5 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Slack &nbsp;·&nbsp; #spendflo-fde &nbsp;·&nbsp; Apr 16, 9:15 AM</div>
+        <div class="comm-headline">Eval pass rate recovered to 93.2% — all CRUD scenarios covered.</div>
+        <div class="comm-text">Rahul M.: "Eval pass rate recovered to 93.2% — all CRUD scenarios now covered. Back above target."</div>
+        <div class="comm-meta">Bengaluru &nbsp;·&nbsp; reacted by Anirudh S.</div>
+      </div>
+    </div>
+
+    <!-- Item 6 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Jira &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Status Update &nbsp;·&nbsp; Apr 17</div>
+        <div class="comm-headline">CRUD: Contract Record Creation — merged to staging.</div>
+        <div class="comm-text">Merged to staging. Awaiting Spendflo tech lead sign-off before production deploy.</div>
+        <div class="comm-meta">Assignee: Rahul M. &nbsp;·&nbsp; Sprint: Month 4</div>
+      </div>
+    </div>
+
+    <!-- Item 7 — excluded -->
+    <div class="comm-item excluded">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Slack &nbsp;·&nbsp; #spendflo-general &nbsp;·&nbsp; Apr 16, 11:02 AM</div>
+        <div class="comm-headline">Updated SOP documentation for CRUD flows.</div>
+        <div class="comm-text">Priya K.: "Updated SOP documentation for CRUD flows. Internal reference only."</div>
+        <div class="comm-meta">Not selected &nbsp;·&nbsp; internal note</div>
+      </div>
+    </div>
+
+    <!-- Item 8 -->
+    <div class="comm-item">
+      <div class="comm-cb-wrap">
+        <div class="comm-cb checked" onclick="toggleComm(this)">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#fcf3d9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="comm-icon">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-source">Fireflies &nbsp;·&nbsp; FDE Standup &nbsp;·&nbsp; Apr 16</div>
+        <div class="comm-headline">Team aligned: contract creation targets production Apr 18.</div>
+        <div class="comm-text">Team aligned on contract creation targeting production Apr 18. Eval recovery on track. No blockers.</div>
+        <div class="comm-meta">Attendees: Rahul M., Priya K. &nbsp;·&nbsp; 15 min</div>
+      </div>
+    </div>
+
+  </div><!-- /comm-feed -->
+
+  <!-- Generate button -->
+  <button class="generate-btn" onclick="goTo('view-reports'); setActiveTab('reports')">
+    Generate Week 14 Report &rarr;
+  </button>
+  <p class="generate-note">7 items selected &nbsp;·&nbsp; pulling BRD Section 3 for plan context &nbsp;·&nbsp; master prompt v2</p>
+
+</div><!-- /page-wrap-project -->
+</div><!-- /view-comms -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  VIEW 4: Reports Tab                                     -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="view-reports" class="view">
+<div class="page-wrap-project">
+
+  <!-- Project Header -->
+  <div class="breadcrumb">
+    <button class="breadcrumb-btn" onclick="goTo('view-admin')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All Engagements
+    </button>
+  </div>
+  <div class="proj-top">
+    <div class="proj-left">
+      <div class="proj-company">
+        Spendflo
+        <div class="proj-status-inline">
+          <svg width="12" height="12" viewBox="0 0 12 12" class="pulse"><rect width="12" height="12" fill="#ff5203"/></svg>
+          On Track
+        </div>
+        <span class="proj-period">Month 4 of 6 &nbsp;·&nbsp; Gate: Jul 5</span>
+      </div>
+      <div class="proj-subtitle">Conversational Procurement Co-pilot &nbsp;·&nbsp; 6-Month Pilot</div>
+      <div class="proj-meta-row">
+        <div class="team-badges">
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--O);">AS</div>
+            <div class="badge-tooltip">Anirudh S.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--B);">RM</div>
+            <div class="badge-tooltip">Rahul M.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--Y);color:var(--ink);">PK</div>
+            <div class="badge-tooltip">Priya K.</div>
+          </div>
+          <div class="team-badge-wrap">
+            <div class="team-badge" style="background:var(--P);color:var(--ink);">KP</div>
+            <div class="badge-tooltip">Krishna P.</div>
+          </div>
+        </div>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
+      </div>
+    </div>
+  </div>
+  <div class="tabs-row">
+    <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
+    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn active" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
+  </div>
+  <!-- /Project Header -->
+
+  <!-- Reports layout -->
+  <div class="reports-layout">
+
+    <!-- Left: Report History — populated by loadReports() -->
+    <div class="report-history">
+      <div class="rh-header">Report History</div>
+
+      <div class="rh-item active">
+        <div class="rh-week">Week 14</div>
+        <div class="rh-period">Apr 14-18</div>
+        <div class="rh-chip draft">Draft</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 13</div>
+        <div class="rh-period">Apr 7-11</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 12</div>
+        <div class="rh-period">Mar 31-Apr 4</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+    </div><!-- /report-history -->
+
+    <!-- Right: Report Viewer -->
+    <div class="report-viewer">
+
+      <!-- Action bar -->
+      <div class="rv-action-bar">
+        <div class="rv-title">Week 14 &nbsp;·&nbsp; Draft &nbsp;·&nbsp; Apr 14-18, 2026</div>
+        <div class="rv-actions">
+          <button class="btn rv-edit-btn">Edit Draft</button>
+          <button class="btn rv-export-btn">Export PDF</button>
+          <button class="btn btn-dark">Send to Champion &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Save bar (shown during edit mode) -->
+      <div class="rv-save-bar">
+        <button class="btn btn-orange rv-save-confirm">Save Draft</button>
+        <button class="btn rv-save-cancel">Cancel</button>
+      </div>
+
+      <!-- Report body — replaced by loadReportVersion() -->
+      <div class="rv-body">
+
+        <!-- Lab0 colophon -->
+        <div class="lab0-colophon" style="margin-top:0;border-top:none;">
+          <div class="lab0-mark">
+            <svg width="48" height="14" viewBox="0 0 48 14">
+              <rect x="0" y="2" width="10" height="10" fill="#ff5203"/>
+              <rect x="13" y="2" width="10" height="10" fill="#0364ff"/>
+              <rect x="26" y="2" width="10" height="10" fill="#f7d241"/>
+              <rect x="39" y="2" width="10" height="10" fill="#ffc0f5"/>
+            </svg>
+            <span class="lm-name">Lab0 Intelligence Platform</span>
+          </div>
+          <div class="lab0-sources">
+            <span class="src">
+              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ff5203"/></svg>
+              Fireflies &nbsp;2 meetings
+            </span>
+            <span class="src">
+              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#0364ff"/></svg>
+              Slack &nbsp;18 messages
+            </span>
+            <span class="src">
+              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#f7d241"/></svg>
+              Jira &nbsp;2 tickets
+            </span>
+            <span class="src">
+              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
+              Loom &nbsp;1 video
+            </span>
+          </div>
+          <div class="lab0-timing">Generated Apr 18, 2026 &nbsp;·&nbsp; 7:52 AM PST</div>
+        </div>
+
+        <!-- Report title block -->
+        <div class="rtp">
+          <div class="rtp-eyebrow">Weekly Status Report &nbsp;·&nbsp; Adopt AI &times; Spendflo</div>
+
+          <svg class="rtp-week-svg" width="80" height="80" viewBox="0 0 80 80">
+            <rect x="1" y="1" width="78" height="78" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+            <rect x="1" y="1" width="20" height="20" fill="#0364ff"/>
+            <rect x="59" y="1" width="20" height="20" fill="#ff5203"/>
+            <rect x="1" y="59" width="20" height="20" fill="#f7d241"/>
+            <rect x="59" y="59" width="20" height="20" fill="#ffc0f5"/>
+            <text x="40" y="47" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1a0e08">14</text>
+          </svg>
+
+          <div class="rtp-week-of">Week 14 of 26</div>
+          <div class="rtp-period">Apr 14-18, 2026</div>
+          <div class="rtp-status-row">
+            <div class="status-stamp">
+              <span class="pulse" style="width:12px;height:12px;display:inline-block;background:var(--O);flex-shrink:0;"></span>
+              On Track
+            </div>
+          </div>
+          <div class="rtp-meta">
+            <div class="rtm-cell">
+              <span class="rtm-label">Lead</span>
+              <span class="rtm-val">Anirudh S.</span>
+            </div>
+            <div class="rtm-cell">
+              <span class="rtm-label">FDE</span>
+              <span class="rtm-val">Rahul M.</span>
+            </div>
+            <div class="rtm-cell">
+              <span class="rtm-label">Champion</span>
+              <span class="rtm-val">Yash Kothari</span>
+            </div>
+            <div class="rtm-cell">
+              <span class="rtm-label">Progress</span>
+              <span class="rtm-val">Month 4 of 6</span>
+            </div>
+            <div class="rtm-cell">
+              <span class="rtm-label">Gate</span>
+              <span class="rtm-val">Jul 5, 2026</span>
+            </div>
+          </div>
+        </div><!-- /rtp -->
+
+        <!-- TL;DR -->
+        <div class="tldr" id="rv-tldr">
+          <span class="tldr-label">TL;DR</span>
+          <p>Month 4 CRUD milestone on track to complete. Contract record creation is in staging — production sign-off expected Monday April 21. Eval pass rate recovered to 93.2%, above the &ge;93% target. Yash confirmed contract creation is his top priority; live demo scheduled Apr 22.</p>
+        </div>
+
+        <!-- Ornamental divider -->
+        <svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet">
+          <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+          <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+          <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+          <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+          <line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+          <rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/>
+          <rect x="608" y="3" width="13" height="13" fill="#f7d241"/>
+          <rect x="626" y="3" width="13" height="13" fill="#0364ff"/>
+          <rect x="644" y="3" width="13" height="13" fill="#ff5203"/>
+        </svg>
+
+        <!-- Plan vs Actual -->
+        <div class="subsec-hd">Plan vs. Actual &nbsp;&#8212;&nbsp; BRD Section 3, Month 4</div>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr>
+                <th>Committed Scope (BRD Section 3)</th>
+                <th>Status &mdash; Week 14</th>
+                <th>Delta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Procurement request creation</td>
+                <td>Shipped — Apr 9</td>
+                <td><span style="color:var(--O);font-style:italic;">On plan</span></td>
+              </tr>
+              <tr>
+                <td>Contract record creation</td>
+                <td>Staging — sign-off pending</td>
+                <td><span style="color:var(--O);">On plan</span></td>
+              </tr>
+              <tr>
+                <td>Power user flows for finance leads</td>
+                <td>Scoped with Yash — in progress</td>
+                <td><span style="color:var(--O);">On plan</span></td>
+              </tr>
+              <tr>
+                <td>Eval pass rate &ge;93% maintained</td>
+                <td>93.2% — recovered</td>
+                <td><span style="color:var(--O);">On target &#10003;</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- This Week's Activity -->
+        <div class="subsec-hd mt-20">This Week's Activity</div>
+        <div>
+          <div class="act-item">
+            <div class="act-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg>
+            </div>
+            <div>
+              <div class="act-source">Fireflies &nbsp;·&nbsp; Apr 14</div>
+              <div class="act-text">Yash confirmed priority, demo requested before Apr 30.</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg>
+            </div>
+            <div>
+              <div class="act-source">Slack &nbsp;·&nbsp; Apr 16</div>
+              <div class="act-text">Eval pass rate recovered to 93.2% — back above target.</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
+            </div>
+            <div>
+              <div class="act-source">Jira &nbsp;·&nbsp; Apr 17</div>
+              <div class="act-text">Contract creation merged to staging — sign-off pending.</div>
+            </div>
+          </div>
+          <div class="act-item">
+            <div class="act-icon">
+              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ffc0f5"/></svg>
+            </div>
+            <div>
+              <div class="act-source">Loom &nbsp;·&nbsp; Apr 15</div>
+              <div class="act-text">Eval suite updated — CRUD contract record scenarios. <span class="loom-link">Watch (4:12)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Deliverables -->
+        <div class="subsec-hd mt-20">Key Deliverables</div>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr>
+                <th>Deliverable</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Ticket</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Contract Record Creation</td>
+                <td>Feature</td>
+                <td>Staging, sign-off pending</td>
+                <td>Rahul M.</td>
+                <td style="color:var(--ink4);font-size:12px;">ADOPT-240</td>
+              </tr>
+              <tr>
+                <td>Eval Suite Recovery</td>
+                <td>QA</td>
+                <td>Done — 93.2%</td>
+                <td>Priya K.</td>
+                <td style="color:var(--ink4);font-size:12px;">ADOPT-241</td>
+              </tr>
+              <tr>
+                <td>CRUD: Bulk Procurement Scope</td>
+                <td>Spec</td>
+                <td>Starting Apr 21</td>
+                <td>Rahul M. + Priya K.</td>
+                <td style="color:var(--ink4);">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Next Week -->
+        <div class="subsec-hd mt-20">Next Week's Commitments</div>
+        <div id="rv-next-week">
+          <div class="nxt-item">
+            <span class="nxt-num">1.</span>
+            <span class="nxt-text">Production deploy contract record creation</span>
+            <span class="nxt-owner">Rahul M. &nbsp;·&nbsp; Apr 21</span>
+          </div>
+          <div class="nxt-item">
+            <span class="nxt-num">2.</span>
+            <span class="nxt-text">Live demo to Yash Kothari</span>
+            <span class="nxt-owner">Anirudh S. &nbsp;·&nbsp; Apr 22</span>
+          </div>
+          <div class="nxt-item">
+            <span class="nxt-num">3.</span>
+            <span class="nxt-text">Begin bulk procurement scope</span>
+            <span class="nxt-owner">Rahul M. + Priya K. &nbsp;·&nbsp; Apr 24</span>
+          </div>
+          <div class="nxt-item">
+            <span class="nxt-num">4.</span>
+            <span class="nxt-text">Month 4 internal Loom review</span>
+            <span class="nxt-owner">Anirudh S. &nbsp;·&nbsp; Apr 25</span>
+          </div>
+        </div>
+
+        <!-- Blockers -->
+        <div class="subsec-hd mt-20">Blockers</div>
+        <div class="no-blocker">
+          <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
+          No active blockers. Staging sign-off is the only pending gate.
+        </div>
+
+        <!-- Ornamental divider -->
+        <svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet" style="margin-top:24px;">
+          <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+          <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+          <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+          <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+          <line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+          <rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/>
+          <rect x="608" y="3" width="13" height="13" fill="#f7d241"/>
+          <rect x="626" y="3" width="13" height="13" fill="#0364ff"/>
+          <rect x="644" y="3" width="13" height="13" fill="#ff5203"/>
+        </svg>
+
+        <!-- Champion Draft -->
+        <div class="champ" id="rv-champion-note">
+          <span class="champ-label">Draft for Yash Kothari &nbsp;·&nbsp; Head of Product &nbsp;·&nbsp; Spendflo</span>
+          <div class="champ-body">
+            Hi Yash — contract creation is in staging and hits production Monday. Eval rate is back above 93%. Demo is confirmed for Tuesday the 22nd. Talk then.
+          </div>
+          <div class="champ-actions">
+            <button class="btn btn-dark">&#9993; Send to Champion</button>
+          </div>
+        </div>
+
+        <!-- Master Prompt -->
+        <button class="prompt-toggle" onclick="togglePrompt()">&#9662; Edit Report Prompt</button>
+        <div class="prompt-panel" id="prompt-panel">
+          <textarea rows="6">You are generating a weekly status report for {{client_name}} from {{engagement_lead}}. Structure: TL;DR referencing BRD delivery plan, Plan vs. Actual table, Activity feed (Fireflies then Slack then Jira then Loom), Deliverables, Next week, Blockers, Champion message. Tone: direct, factual, confident. Champion: {{champion_name}}, {{champion_title}}.</textarea>
+          <button class="btn btn-orange">Regenerate Report</button>
+        </div>
+
+      </div><!-- /rv-body -->
+    </div><!-- /report-viewer -->
+
+  </div><!-- /reports-layout -->
+
+</div><!-- /page-wrap-project -->
+</div><!-- /view-reports -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  VIEW 5: User Control / Settings                        -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="view-user-control" class="view">
+<div class="page-wrap">
+
+  <div class="sec-hd-row">
+    <h1 class="page-h1">Settings</h1>
+    <button class="btn" onclick="goTo('view-admin')">Back to Engagements</button>
+  </div>
+
+  <!-- Ornamental SVG divider -->
+  <svg class="orn-rule" height="18" viewBox="0 0 1020 18" preserveAspectRatio="xMidYMid meet">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="9.5" x2="946" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="950" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="968" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="986" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="1004" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- Master Prompt -->
+  <div class="uc-section">
+    <div class="uc-section-hd">Master Prompt</div>
+    <p class="page-sub" style="margin-bottom:14px;">Used as the base instruction when generating weekly reports.</p>
+    <textarea id="master-prompt-textarea" class="uc-textarea" rows="10" placeholder="Enter the master prompt used for report generation..."></textarea>
+    <div style="margin-top:12px;">
+      <button class="btn btn-orange" id="save-settings-btn">Save Prompt</button>
+    </div>
+  </div>
+
+  <!-- Integrations -->
+  <div class="uc-section">
+    <div class="uc-section-hd">Integrations</div>
+    <p class="page-sub" style="margin-bottom:14px;">Connected data sources for activity ingestion.</p>
+    <div class="uc-integrations" id="integrations-grid">
+      <!-- Populated by loadIntegrations() -->
+      <div class="uc-int-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
+          <span style="font-size:15px;font-weight:600;color:var(--ink);">Fireflies</span>
+        </div>
+        <div class="uc-int-badge">Connected</div>
+        <div class="uc-int-since">Since Jan 5, 2026</div>
+      </div>
+      <div class="uc-int-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+          <span style="font-size:15px;font-weight:600;color:var(--ink);">Jira</span>
+        </div>
+        <div class="uc-int-badge">Connected</div>
+        <div class="uc-int-since">Since Jan 5, 2026</div>
+      </div>
+      <div class="uc-int-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+          <span style="font-size:15px;font-weight:600;color:var(--ink);">Slack</span>
+        </div>
+        <div class="uc-int-badge">Connected</div>
+        <div class="uc-int-since">Since Jan 5, 2026</div>
+      </div>
+      <div class="uc-int-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
+          <span style="font-size:15px;font-weight:600;color:var(--ink);">Loom</span>
+        </div>
+        <div class="uc-int-badge">Connected</div>
+        <div class="uc-int-since">Since Jan 5, 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Members -->
+  <div class="uc-section">
+    <div class="uc-section-hd">Team Members</div>
+    <p class="page-sub" style="margin-bottom:14px;">Manage who has access to the Lab0 platform.</p>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody id="team-members-tbody">
+          <!-- Populated by loadTeamMembers() -->
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--O);">AS</div>Anirudh S.</div></td>
+            <td>anirudh@adopt.ai</td>
+            <td>admin</td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--B);">RM</div>Rahul M.</div></td>
+            <td>rahul.m@adopt.ai</td>
+            <td>editor</td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--Y);color:var(--ink);">PK</div>Priya K.</div></td>
+            <td>priya.k@adopt.ai</td>
+            <td>editor</td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--P);color:var(--ink);">KP</div>Krishna P.</div></td>
+            <td>krishna.p@adopt.ai</td>
+            <td>viewer</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+      <input id="new-member-name" type="text" placeholder="Name" style="flex:1;min-width:120px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
+      <input id="new-member-email" type="email" placeholder="Email" style="flex:2;min-width:180px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
+      <input id="new-member-role" type="text" placeholder="Role" style="flex:1;min-width:100px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
+      <button class="btn" id="add-member-btn">Add Member</button>
+    </div>
+  </div>
+
+  <!-- Engagement Defaults -->
+  <div class="uc-section">
+    <div class="uc-section-hd">Engagement Defaults</div>
+    <p class="page-sub" style="margin-bottom:14px;">Default settings applied to new engagements.</p>
+    <div class="uc-defaults-grid">
+      <div class="uc-default-row">
+        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Report Template</label>
+        <select id="default-template" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
+          <option value="standard">Standard</option>
+          <option value="executive">Executive</option>
+          <option value="technical">Technical</option>
+        </select>
+      </div>
+      <div class="uc-default-row">
+        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Delivery Method</label>
+        <select id="default-delivery" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
+          <option value="email">Email</option>
+          <option value="slack">Slack</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div class="uc-default-row">
+        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Cadence</label>
+        <select id="default-cadence" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Bi-weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-orange" id="save-defaults-btn">Save Defaults</button>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+</div><!-- /view-user-control -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  MODAL: Permissions                                      -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div id="modal-permissions" class="modal-overlay" onclick="if(event.target===this)hideModal('modal-permissions')">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div class="modal-title">Access &nbsp;·&nbsp; Spendflo</div>
+      <button class="modal-close" onclick="hideModal('modal-permissions')">&#215;</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-cols">
+
+        <!-- Editors -->
+        <div>
+          <span class="modal-col-label">Editors</span>
+          <p class="modal-col-desc">Can edit BRD, generate and edit reports</p>
+          <div class="modal-user-row">
+            <span>anirudh@adopt.ai</span>
+            <button class="modal-remove" title="Remove">&#215;</button>
+          </div>
+          <div class="modal-user-row">
+            <span>rahul.m@adopt.ai</span>
+            <button class="modal-remove" title="Remove">&#215;</button>
+          </div>
+          <div class="modal-user-row">
+            <span>priya.k@adopt.ai</span>
+            <button class="modal-remove" title="Remove">&#215;</button>
+          </div>
+          <div class="modal-add-row">
+            <input type="email" placeholder="Add editor email">
+            <button class="btn">Add</button>
+          </div>
+        </div>
+
+        <!-- Viewers -->
+        <div>
+          <span class="modal-col-label">Viewers</span>
+          <p class="modal-col-desc">Read-only: reports and BRD</p>
+          <div class="modal-user-row">
+            <span>yash@spendflo.com <span style="font-size:11px;font-style:italic;color:var(--ink4);">Champion</span></span>
+            <button class="modal-remove" title="Remove">&#215;</button>
+          </div>
+          <div class="modal-user-row">
+            <span>krishna.p@adopt.ai</span>
+            <button class="modal-remove" title="Remove">&#215;</button>
+          </div>
+          <div class="modal-add-row">
+            <input type="email" placeholder="Add viewer email">
+            <button class="btn">Add</button>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="modal-sep">
+
+      <!-- Admin -->
+      <div class="modal-admin">
+        <span class="modal-col-label">Admin</span>
+        <p class="modal-col-desc" style="margin-bottom:10px;">Full access, can manage team</p>
+        <div class="modal-admin-row">
+          <span style="color:var(--ink4);">anirudh@adopt.ai</span>
+          <span class="owner-tag">Owner</span>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div><!-- /modal-panel -->
+</div><!-- /modal-permissions -->
+
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Supabase JS v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- App JS -->
+<script src="app.js"></script>
+
+</body>
+</html>

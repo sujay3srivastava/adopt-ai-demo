@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab0 · Adopt AI × Spendflo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper:  #fcf3d9;
+  --ink:    #1a0e08;
+  --ink2:   #3d2a1a;
+  --ink3:   #7a6050;
+  --ink4:   #a89080;
+  --rule:   #c0a070;
+  --rule2:  #dcc8a8;
+
+  --O: #ff5203;
+  --B: #0364ff;
+  --Y: #f7d241;
+  --P: #ffc0f5;
+}
+
+body {
+  background: var(--paper);
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+.stripe {
+  height: 7px;
+  display: flex;
+  position: sticky; top: 0; z-index: 200;
+}
+.stripe div { flex: 1; }
+
+.nav {
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 7px; z-index: 199;
+}
+.nav-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 11px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-tabs { display: flex; gap: 28px; }
+.tab-btn {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid transparent;
+  transition: all .15s;
+  letter-spacing: .02em;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--ink); border-bottom-color: var(--O); }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── WRAPPER ── */
+.doc-wrap {
+  max-width: 860px;
+  margin: 44px auto 80px;
+  padding: 0 52px;
+}
+
+/* ── ORNAMENTAL DIVIDER ── */
+.orn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32px 0;
+  gap: 0;
+}
+
+/* ── TITLE PAGE ── */
+.tp {
+  text-align: center;
+  padding: 48px 0 40px;
+  border-bottom: 1.5px solid var(--rule);
+  position: relative;
+}
+.tp-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 18px;
+}
+.tp-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 7px;
+  letter-spacing: -.02em;
+}
+.tp-sub {
+  font-size: 15px;
+  color: var(--ink3);
+  margin-bottom: 28px;
+}
+.tp-ornrule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 20px 0;
+}
+.tor-line { width: 90px; height: 1px; background: var(--rule); }
+.tor-sq { display: flex; gap: 4px; }
+.tsq { width: 9px; height: 9px; display: block; }
+
+.tp-meta {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  margin-top: 22px;
+  overflow: hidden;
+}
+.tpm-cell {
+  padding: 9px 20px;
+  border-right: 1px solid var(--rule2);
+  text-align: center;
+}
+.tpm-cell:last-child { border-right: none; }
+.tpm-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.tpm-val { font-size: 14px; font-weight: 500; }
+
+/* ── SECTIONS ── */
+.section { padding: 28px 0; border-bottom: 1px solid var(--rule2); }
+.section:last-child { border-bottom: none; }
+
+.sec-hd {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.sec-mark { flex-shrink: 0; padding-top: 4px; }
+.sec-label-wrap { }
+.sec-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.sec-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.sec-note {
+  font-size: 12px;
+  color: var(--ink4);
+  margin-top: -10px;
+  margin-bottom: 16px;
+  margin-left: 36px;
+}
+
+/* ── INFO GRID ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule);
+}
+.ig-cell {
+  padding: 11px 15px;
+  border-right: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+}
+.ig-cell:nth-child(4n) { border-right: none; }
+.ig-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.ig-val { font-size: 14px; font-weight: 500; }
+
+/* ── OBJECTIVES ── */
+.obj-item {
+  display: flex;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--rule2);
+}
+.obj-item:last-child { border-bottom: none; }
+.obj-sq { flex-shrink: 0; width: 14px; height: 14px; margin-top: 5px; display: block; }
+.obj-title { font-size: 15.5px; font-weight: 600; margin-bottom: 4px; }
+.obj-desc { font-size: 14.5px; color: var(--ink3); line-height: 1.65; }
+
+/* ── TABLES ── */
+.tbl { border: 1px solid var(--rule); width: 100%; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr { background: rgba(26,14,8,.04); }
+th {
+  padding: 9px 13px;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  border-bottom: 1px solid var(--rule);
+}
+td {
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--rule2);
+  color: var(--ink2);
+  vertical-align: top;
+  line-height: 1.55;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(26,14,8,.02); }
+td.tp { color: var(--ink); font-weight: 500; font-size: 15px; }
+td.mono { font-family: 'Courier New', monospace; font-size: 12.5px; color: var(--ink3); }
+
+/* Inline status shape in tables */
+.sts {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink2);
+}
+.sts-sq { width: 11px; height: 11px; display: inline-block; flex-shrink: 0; }
+
+/* ── CHECKLIST ── */
+.chk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule2);
+  font-size: 15px;
+  color: var(--ink2);
+  line-height: 1.5;
+}
+.chk-item:last-child { border-bottom: none; }
+.chk-box {
+  width: 13px; height: 13px;
+  border: 1px solid var(--rule);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* ─── STATUS REPORT STYLES ─────────────── */
+/* ═══════════════════════════════════════════ */
+
+/* Lab0 colophon */
+.lab0-colophon {
+  border: 1px solid var(--rule);
+  border-bottom: none;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: rgba(26,14,8,.035);
+}
+.lab0-mark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lm-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--ink);
+}
+.lab0-sources {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.src {
+  font-size: 12px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.src-sq { width: 8px; height: 8px; display: inline-block; flex-shrink: 0; }
+.lab0-timing {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--ink3);
+  text-align: right;
+  white-space: nowrap;
+}
+.lab0-timing strong { color: var(--ink); font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 600; }
+
+/* Report title page */
+.rtp {
+  text-align: center;
+  padding: 40px 0 32px;
+  border: 1px solid var(--rule);
+  border-top: none;
+  border-bottom: 1.5px solid var(--rule);
+}
+.rtp-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 18px;
+}
+.rtp-week {
+  font-family: 'Inter', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.rtp-week-sub {
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 18px;
+}
+.rtp-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin-bottom: 4px;
+}
+.rtp-period {
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 22px;
+}
+.rtp-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.status-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1.5px solid var(--rule);
+  padding: 6px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: .12em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ss-shape { width: 12px; height: 12px; display: block; background: var(--O); }
+.ss-shape.pulse {
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+.rtp-meta {
+  display: inline-flex;
+  border: 1px solid var(--rule2);
+  overflow: hidden;
+}
+.rtm-cell {
+  padding: 9px 18px;
+  border-right: 1px solid var(--rule2);
+  text-align: center;
+}
+.rtm-cell:last-child { border-right: none; }
+.rtm-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.rtm-val { font-size: 14px; font-weight: 500; }
+
+/* TL;DR box */
+.tldr {
+  border-left: 3px solid var(--O);
+  padding: 14px 20px;
+  background: rgba(255,82,3,.04);
+}
+.tldr-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--O);
+  display: block;
+  margin-bottom: 8px;
+}
+.tldr p { font-size: 14px; color: var(--ink); line-height: 1.65; }
+
+/* Milestone tracker */
+.ms-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.ms-card {
+  border: 1px solid var(--rule2);
+  padding: 14px 8px;
+  text-align: center;
+}
+.ms-card.done { border-color: var(--O); background: rgba(255,82,3,.05); }
+.ms-card.current { border: 2px solid var(--B); background: rgba(3,100,255,.05); }
+.ms-card.planned { opacity: .55; }
+
+.ms-geo { margin: 0 auto 10px; display: block; }
+.ms-phase {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 4px;
+}
+.ms-name { font-size: 11px; font-weight: 500; color: var(--ink); line-height: 1.35; margin-bottom: 6px; }
+.ms-date { font-size: 11px; color: var(--ink4); }
+
+/* Activity feed */
+.act-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule2);
+}
+.act-item:last-child { border-bottom: none; }
+.act-icon { flex-shrink: 0; padding-top: 4px; }
+.act-source {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 5px;
+}
+.act-text { font-size: 14px; color: var(--ink2); line-height: 1.6; }
+.act-text strong { color: var(--ink); font-weight: 600; }
+.act-meta { font-size: 12px; font-style: italic; color: var(--ink4); margin-top: 3px; }
+
+/* Metrics grid */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule);
+}
+.m-card {
+  padding: 18px 14px;
+  border-right: 1px solid var(--rule2);
+  text-align: center;
+}
+.m-card:last-child { border-right: none; }
+.m-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 10px;
+}
+.m-val {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.m-delta { font-size: 12px; color: var(--ink4); }
+.m-pos { color: var(--O); }
+.m-neg { color: var(--B); }
+
+/* Metrics supporting table */
+.metrics-sub { margin-top: 12px; }
+
+/* Next week */
+.nxt-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--rule2);
+  font-size: 15px;
+}
+.nxt-item:last-child { border-bottom: none; }
+.nxt-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--ink4);
+  width: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.nxt-text { flex: 1; color: var(--ink2); line-height: 1.5; font-size: 14px; }
+.nxt-text strong { color: var(--ink); }
+.nxt-owner { font-size: 12px; color: var(--ink4); white-space: nowrap; }
+
+/* Champion note */
+.champ {
+  border: 1px solid var(--rule);
+  padding: 22px 26px;
+  position: relative;
+}
+.champ::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--P);
+}
+.champ-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 12px;
+}
+.champ-body {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+.champ-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 20px;
+}
+.ca-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--rule2);
+  padding: 2px 0;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ca-btn:hover { color: var(--ink); border-color: var(--O); }
+
+/* Time saved colophon */
+.ts-colophon {
+  border: 1px solid var(--rule2);
+  border-top: 1.5px solid var(--rule);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(26,14,8,.025);
+  margin-top: 0;
+}
+.tsc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--ink4);
+}
+.tsc-sq { display: flex; gap: 3px; }
+.tsq { width: 7px; height: 7px; }
+.tsc-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.tsc-stat {
+  text-align: right;
+  font-size: 12px;
+  color: var(--ink4);
+}
+.tsc-stat strong { color: var(--ink); font-size: 15px; font-style: normal; }
+.tsc-sep { color: var(--rule); font-size: 18px; font-weight: 300; }
+
+/* Loom ref */
+.loom-ref {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--O);
+  border-bottom: 1px solid var(--O);
+  cursor: pointer;
+  display: inline;
+}
+
+/* No blockers */
+.no-blocker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--Y);
+  background: rgba(247,210,65,.1);
+  font-size: 14px;
+  color: var(--ink2);
+}
+</style>
+</head>
+<body>
+
+<!-- Four-color stripe -->
+<div class="stripe">
+  <div style="background:var(--O)"></div>
+  <div style="background:var(--B)"></div>
+  <div style="background:var(--Y)"></div>
+  <div style="background:var(--P)"></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      Lab0 &nbsp;<span style="color:var(--ink3);font-weight:400;font-size:13px;">· Adopt AI × Spendflo</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="sw('brd',this)">Engagement Brief</button>
+      <button class="tab-btn" onclick="sw('rpt',this)">Week 13 · Status Report</button>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  B R D                                      -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="brd" class="view active">
+<div class="doc-wrap">
+
+  <!-- Lab0 BRD colophon -->
+  <div class="lab0-colophon">
+    <div class="lab0-mark">
+      <svg width="48" height="14" viewBox="0 0 48 14">
+        <rect x="0" y="1" width="10" height="10" fill="#ff5203"/>
+        <rect x="13" y="1" width="10" height="10" fill="#0364ff"/>
+        <rect x="26" y="1" width="10" height="10" fill="#f7d241"/>
+        <rect x="39" y="1" width="10" height="10" fill="#ffc0f5"/>
+      </svg>
+      <span class="lm-name">Lab0 Intelligence Platform</span>
+    </div>
+    <div class="lab0-sources">
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#ff5203"/></svg>Fireflies · Discovery call, Jan 3</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#0364ff"/></svg>Slack · Kickoff thread</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#f7d241"/></svg>Jira · Project scaffolding</span>
+    </div>
+    <div class="lab0-timing">
+      Drafted in <strong>6m 04s</strong> &nbsp;·&nbsp; v1.0 · Jan 5, 2026
+    </div>
+  </div>
+
+  <!-- Title page -->
+  <div class="tp">
+
+    <div class="tp-eyebrow">Engagement Brief &amp; Requirements Document</div>
+    <div class="tp-title">Adopt AI &nbsp;×&nbsp; Spendflo</div>
+    <div class="tp-sub">Conversational Procurement Co-pilot — Implementation Engagement</div>
+
+    <div class="tp-ornrule">
+      <div class="tor-line"></div>
+      <div class="tor-sq">
+        <span class="tsq" style="background:var(--O)"></span>
+        <span class="tsq" style="background:var(--B)"></span>
+        <span class="tsq" style="background:var(--Y)"></span>
+        <span class="tsq" style="background:var(--P)"></span>
+      </div>
+      <div class="tor-line"></div>
+    </div>
+
+    <div class="tp-meta">
+      <div class="tpm-cell">
+        <span class="tpm-label">Version</span>
+        <span class="tpm-val">1.0</span>
+      </div>
+      <div class="tpm-cell">
+        <span class="tpm-label">Date</span>
+        <span class="tpm-val">January 5, 2026</span>
+      </div>
+      <div class="tpm-cell">
+        <span class="tpm-label">Duration</span>
+        <span class="tpm-val">6-Month Pilot</span>
+      </div>
+      <div class="tpm-cell">
+        <span class="tpm-label">Gates</span>
+        <span class="tpm-val">Month 3 · Month 6</span>
+      </div>
+      <div class="tpm-cell">
+        <span class="tpm-label">Status</span>
+        <span class="tpm-val">Active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ornamental divider -->
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;margin:0;">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="9.5" x2="682" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="686" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="704" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="722" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="740" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- I. Engagement Overview -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 1</span>
+        <span class="sec-title">Engagement Overview</span>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="ig-cell"><span class="ig-label">Client</span><span class="ig-val">Spendflo Inc.</span></div>
+      <div class="ig-cell"><span class="ig-label">Champion</span><span class="ig-val">Yash Kothari</span></div>
+      <div class="ig-cell"><span class="ig-label">Champion Title</span><span class="ig-val">Head of Product</span></div>
+      <div class="ig-cell"><span class="ig-label">Executive Sponsor</span><span class="ig-val">Spendflo CEO</span></div>
+      <div class="ig-cell"><span class="ig-label">Engagement Lead</span><span class="ig-val">Anirudh S.</span></div>
+      <div class="ig-cell"><span class="ig-label">FDE Lead (India)</span><span class="ig-val">Rahul M.</span></div>
+      <div class="ig-cell"><span class="ig-label">FDE Engineer</span><span class="ig-val">Priya K.</span></div>
+      <div class="ig-cell"><span class="ig-label">Solution Consultant</span><span class="ig-val">Krishna P.</span></div>
+      <div class="ig-cell"><span class="ig-label">Contract Type</span><span class="ig-val">6-Month Pilot</span></div>
+      <div class="ig-cell"><span class="ig-label">Start Date</span><span class="ig-val">Jan 5, 2026</span></div>
+      <div class="ig-cell"><span class="ig-label">Month 3 Gate</span><span class="ig-val">Apr 5, 2026</span></div>
+      <div class="ig-cell"><span class="ig-label">Month 6 Gate</span><span class="ig-val">Jul 5, 2026</span></div>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="18" y="3" width="13" height="13" fill="#f7d241"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="743" y="3" width="13" height="13" fill="#0364ff"/>
+  </svg>
+
+  <!-- II. Business Objectives -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 2</span>
+        <span class="sec-title">Business Objectives &amp; Success Definition</span>
+      </div>
+    </div>
+
+    <div class="obj-item">
+      <svg class="obj-sq" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="14" height="14" fill="#ff5203"/></svg>
+      <div>
+        <div class="obj-title">Replace Manual Navigation with Conversational AI</div>
+        <div class="obj-desc">Spendflo customers navigate complex multi-screen workflows to answer procurement questions — renewal timelines, vendor spend, budget status. The co-pilot must answer any such query in natural language within 10 seconds, inside the product, without a single page navigation. Yash's north star: "We'll know we've nailed it when co-pilot replaces navigation for routine queries."</div>
+      </div>
+    </div>
+    <div class="obj-item">
+      <svg class="obj-sq" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" fill="#0364ff"/></svg>
+      <div>
+        <div class="obj-title">Full RBAC Compliance Across Multi-Tenant Architecture</div>
+        <div class="obj-desc">Spendflo serves procurement managers, finance leads, and IT administrators with different data scopes across the same tenancy. The co-pilot must honour all existing role-based access controls with zero cross-role data exposure. No changes to Spendflo's permission layer will be made.</div>
+      </div>
+    </div>
+    <div class="obj-item">
+      <svg class="obj-sq" viewBox="0 0 14 14" fill="none"><rect width="14" height="14" fill="#f7d241"/></svg>
+      <div>
+        <div class="obj-title">Drive Product Adoption — Co-pilot Displaces Traditional Navigation</div>
+        <div class="obj-desc">Success is a measurable, sustained shift in how users interact with the product. Co-pilot query volume should rise week-on-week while click-through navigation to the same data declines. The engagement is considered successful when co-pilot handles &gt;40% of routine procurement queries by Month 6.</div>
+      </div>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="743" y="3" width="13" height="13" fill="#f7d241"/>
+  </svg>
+
+  <!-- III. Delivery Plan -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 3</span>
+        <span class="sec-title">Month-by-Month Delivery Plan</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr>
+          <th>Month</th><th>Phase</th><th>Key Activities</th><th>Exit Milestone</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">Jan 2026</td>
+            <td class="tp">Foundation &amp; Integration</td>
+            <td>REST API integration; RBAC model mapping; dev + staging environment setup; initial agent configuration and prompt architecture</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Dev Agent Live</span></td>
+          </tr>
+          <tr>
+            <td class="mono">Feb 2026</td>
+            <td class="tp">QA &amp; Release Hardening</td>
+            <td>Full QA suite (50 test cases); SOP documentation for QA, release management, and fallback; staging sign-off from Spendflo tech lead</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Staging Approved</span></td>
+          </tr>
+          <tr>
+            <td class="mono">Mar 2026</td>
+            <td class="tp">Production Launch</td>
+            <td>Go-live in production; pilot cohort onboarding; baseline usage metrics established; weekly monitoring begins</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Co-pilot Live</span></td>
+          </tr>
+          <tr>
+            <td class="mono">Apr 2026</td>
+            <td class="tp">CRUD Expansion</td>
+            <td>Extend co-pilot to create/write actions: procurement request creation, contract record logging; power user flows for finance leads</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#0364ff"/></svg>CRUD Actions Live</span></td>
+          </tr>
+          <tr>
+            <td class="mono">May 2026</td>
+            <td class="tp">Optimisation</td>
+            <td>Performance tuning from production telemetry; additional use cases from user feedback; eval pass rate target &gt;95%</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#f7d241"/></svg>Eval Rate ≥95%</span></td>
+          </tr>
+          <tr>
+            <td class="mono">Jun 2026</td>
+            <td class="tp">Evaluation &amp; Renewal</td>
+            <td>Pilot retrospective with champion and exec sponsor; ROI measurement against agreed metrics; annual contract terms discussion</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ffc0f5"/></svg>Renewal Decision</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ff5203"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="743" y="3" width="13" height="13" fill="#ffc0f5"/>
+  </svg>
+
+  <!-- IV. Integration Dependencies -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 4</span>
+        <span class="sec-title">Integration Dependencies</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>System</th><th>Purpose</th><th>Method</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td class="tp">Spendflo REST API</td><td>Procurement data — vendors, contracts, spend, renewals</td><td>API Key + OAuth 2.0</td><td>Spendflo Eng. Lead</td></tr>
+          <tr><td class="tp">RBAC Model</td><td>Role-based access: Procurement Mgr / Finance Lead / IT Admin</td><td>Injected per session token</td><td>Spendflo Eng. Lead</td></tr>
+          <tr><td class="tp">NetSuite</td><td>Finance sync — PO records, invoice status</td><td>Webhook callbacks</td><td>Spendflo Finance Tech</td></tr>
+          <tr><td class="tp">Slack</td><td>FDE team comms, async updates, incident pings</td><td>#spendflo-fde workspace</td><td>Anirudh S.</td></tr>
+          <tr><td class="tp">Jira</td><td>Task tracking, sprint planning, bug triage</td><td>Project: SPD-AI-IMPL</td><td>Rahul M.</td></tr>
+          <tr><td class="tp">Fireflies</td><td>Meeting capture — syncs, demos, retrospectives</td><td>Fireflies workspace auto-join</td><td>Anirudh S.</td></tr>
+          <tr><td class="tp">Grafana</td><td>Agent observability — uptime, eval rate, latency</td><td>Grafana Cloud dashboard</td><td>Rahul M.</td></tr>
+          <tr><td class="tp">Loom</td><td>Async demos, FDE walkthroughs, release previews</td><td>Shared Loom workspace</td><td>FDE Team</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <line x1="54" y1="9.5" x2="702" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="706" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="724" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="742" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- V. Team & Roles -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 5</span>
+        <span class="sec-title">Team &amp; Roles</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Name</th><th>Role</th><th>Org</th><th>Location</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td class="tp">Anirudh S.</td><td>Engagement Lead</td><td>Adopt AI</td><td>Seattle, WA</td><td>Client relationship, status reporting, renewal</td></tr>
+          <tr><td class="tp">Rahul M.</td><td>FDE Lead</td><td>Adopt AI</td><td>Bengaluru</td><td>Technical implementation, sprint lead, QA oversight</td></tr>
+          <tr><td class="tp">Priya K.</td><td>FDE Engineer</td><td>Adopt AI</td><td>Bengaluru</td><td>Agent engineering, SOP documentation, eval pipeline</td></tr>
+          <tr><td class="tp">Krishna P.</td><td>Solution Consultant</td><td>Adopt AI</td><td>Bay Area, CA</td><td>Presales support, technical scoping, integration design</td></tr>
+          <tr><td class="tp">Yash Kothari</td><td>Champion</td><td>Spendflo</td><td>—</td><td>Weekly sync, product decisions, pilot sign-off</td></tr>
+          <tr><td class="tp">TBD</td><td>Technical Lead</td><td>Spendflo</td><td>—</td><td>API access, RBAC config, staging approvals</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="743" y="3" width="13" height="13" fill="#0364ff"/>
+  </svg>
+
+  <!-- VI. Success Metrics -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 6</span>
+        <span class="sec-title">Success Metrics</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Metric</th><th>Target</th><th>Measured By</th><th>Review</th></tr></thead>
+        <tbody>
+          <tr><td class="tp">Co-pilot WAU</td><td>&gt;30% of active Spendflo users weekly</td><td>Grafana session tracking</td><td>Weekly</td></tr>
+          <tr><td class="tp">Navigation Shift</td><td>&gt;40% of routine queries via co-pilot by Month 6</td><td>Click-path analytics</td><td>Monthly</td></tr>
+          <tr><td class="tp">Response Time</td><td>&lt;1.5s avg end-to-end</td><td>Grafana p50 / p95</td><td>Weekly</td></tr>
+          <tr><td class="tp">Eval Pass Rate</td><td>≥93% at Month 3 · ≥95% at Month 6</td><td>Automated eval pipeline</td><td>Weekly</td></tr>
+          <tr><td class="tp">Thumbs-Down Rate</td><td>&lt;3%</td><td>In-product feedback widget</td><td>Weekly</td></tr>
+          <tr><td class="tp">Champion Satisfaction</td><td>"I'd recommend this to another product team"</td><td>Month 3 &amp; 6 retrospective</td><td>Gate reviews</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ff5203"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="743" y="3" width="13" height="13" fill="#f7d241"/>
+  </svg>
+
+  <!-- VII. Pilot Exit Criteria -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 7</span>
+        <span class="sec-title">Pilot Exit Criteria — Month 3 Gate</span>
+      </div>
+    </div>
+    <div class="chk-item"><span class="chk-box"></span>Co-pilot live in production, handling ≥5 distinct procurement query types (spend, renewals, approvals, vendor lookup, budget status)</div>
+    <div class="chk-item"><span class="chk-box"></span>RBAC validated across all three user roles — zero cross-role data exposure across 100 QA test cases</div>
+    <div class="chk-item"><span class="chk-box"></span>Production uptime ≥99.5% over 4-week post-launch window</div>
+    <div class="chk-item"><span class="chk-box"></span>Eval pass rate ≥93% as measured by the automated eval pipeline</div>
+    <div class="chk-item"><span class="chk-box"></span>Champion sign-off: Yash confirms product direction is aligned and team is engaged</div>
+    <div class="chk-item"><span class="chk-box"></span>Minimum 50 unique users active on co-pilot in Month 3</div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#ff5203"/>
+    <line x1="54" y1="9.5" x2="702" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="706" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="724" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="742" y="3" width="13" height="13" fill="#ffc0f5"/>
+  </svg>
+
+  <!-- VIII. Commercial Terms -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Section 8</span>
+        <span class="sec-title">Commercial Terms</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Term</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="tp">Pilot Duration</td><td>6 months — January 5, 2026 to July 5, 2026</td></tr>
+          <tr><td class="tp">Walk-Off Gates</td><td>Client may exit at Month 3 (Apr 5) or Month 6 (Jul 5) with 30 days' written notice</td></tr>
+          <tr><td class="tp">Monthly Retainer</td><td>Per signed SOW — payable monthly in advance</td></tr>
+          <tr><td class="tp">Renewal Trigger</td><td>Successful Month 6 gate + champion sign-off → annual contract discussion commences</td></tr>
+          <tr><td class="tp">Data &amp; IP</td><td>All customer data remains on Spendflo infrastructure. Adopt AI holds no data post-engagement. SOC 2 Type II certified.</td></tr>
+          <tr><td class="tp">Document Owner</td><td>Anirudh S. (Adopt AI) — version-controlled, updated at each pilot gate</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Final ornament -->
+  <svg width="100%" height="22" viewBox="0 0 756 22" preserveAspectRatio="xMidYMid meet" style="display:block;margin-top:28px;">
+    <rect x="0" y="4" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="4" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="4" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="4" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="10.5" x2="340" y2="10.5" stroke="#c0a070" stroke-width="1"/>
+    <!-- center mark -->
+    <rect x="343" y="4" width="13" height="13" fill="#c0a070"/>
+    <line x1="362" y1="10.5" x2="682" y2="10.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="686" y="4" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="704" y="4" width="13" height="13" fill="#f7d241"/>
+    <rect x="722" y="4" width="13" height="13" fill="#0364ff"/>
+    <rect x="740" y="4" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  S T A T U S   R E P O R T                  -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="rpt" class="view">
+<div class="doc-wrap">
+
+  <!-- Lab0 colophon -->
+  <div class="lab0-colophon">
+    <div class="lab0-mark">
+      <svg width="48" height="14" viewBox="0 0 48 14">
+        <rect x="0" y="1" width="10" height="10" fill="#ff5203"/>
+        <rect x="13" y="1" width="10" height="10" fill="#0364ff"/>
+        <rect x="26" y="1" width="10" height="10" fill="#f7d241"/>
+        <rect x="39" y="1" width="10" height="10" fill="#ffc0f5"/>
+      </svg>
+      <span class="lm-name">Lab0 Intelligence Platform</span>
+    </div>
+    <div class="lab0-sources">
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#ff5203"/></svg>Fireflies · 4 meetings</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#0364ff"/></svg>Slack · 53 messages</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#f7d241"/></svg>Jira · 8 tickets</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq"><rect width="8" height="8" fill="#ffc0f5"/></svg>Loom · 2 videos</span>
+      <span class="src"><svg width="8" height="8" viewBox="0 0 8 8" class="src-sq" style="border:1px solid var(--rule)"><rect width="8" height="8" fill="none"/></svg>Grafana · live</span>
+    </div>
+    <div class="lab0-timing">
+      Generated <strong>April 11, 2026 · 8:07 AM PST</strong>
+    </div>
+  </div>
+
+  <!-- Report title page -->
+  <div class="rtp">
+    <div class="rtp-eyebrow">Weekly Status Report · Adopt AI × Spendflo</div>
+
+    <!-- Week ornament — Euclid-style circle with labeled cardinal points -->
+    <svg width="108" height="108" viewBox="0 0 108 108" style="display:block;margin:0 auto 20px;">
+      <!-- Construction lines -->
+      <line x1="54" y1="4" x2="54" y2="104" stroke="#c0a070" stroke-width=".7" opacity=".5"/>
+      <line x1="4" y1="54" x2="104" y2="54" stroke="#c0a070" stroke-width=".7" opacity=".5"/>
+      <!-- Four colored sectors -->
+      <path d="M54,54 L54,8 A46,46 0 0,1 100,54 Z" fill="#ff5203" opacity=".85"/>
+      <path d="M54,54 L100,54 A46,46 0 0,1 54,100 Z" fill="#ffc0f5" opacity=".85"/>
+      <path d="M54,54 L54,100 A46,46 0 0,1 8,54 Z" fill="#f7d241" opacity=".85"/>
+      <path d="M54,54 L8,54 A46,46 0 0,1 54,8 Z" fill="#0364ff" opacity=".85"/>
+      <!-- Outer ring -->
+      <circle cx="54" cy="54" r="46" fill="none" stroke="#c0a070" stroke-width="1.2"/>
+      <!-- Inner disc -->
+      <circle cx="54" cy="54" r="28" fill="#fcf3d9"/>
+      <circle cx="54" cy="54" r="28" fill="none" stroke="#c0a070" stroke-width=".8"/>
+      <!-- Week number -->
+      <text x="54" y="60" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#1a0e08">13</text>
+      <!-- Cardinal point squares -->
+      <rect x="48" y="4" width="12" height="8" fill="#ff5203"/>
+      <rect x="48" y="96" width="12" height="8" fill="#f7d241"/>
+      <rect x="4" y="48" width="8" height="12" fill="#0364ff"/>
+      <rect x="96" y="48" width="8" height="12" fill="#ffc0f5"/>
+    </svg>
+
+    <div class="rtp-week">Week 13 of 26</div>
+    <div class="rtp-week-sub">April 7–11, 2026</div>
+    <div class="rtp-title">Weekly Status Report</div>
+    <div class="rtp-period">Adopt AI × Spendflo · Conversational Procurement Co-pilot</div>
+
+    <div class="rtp-status-row">
+      <div class="status-stamp">
+        <span class="ss-shape pulse"></span>
+        On Track
+      </div>
+    </div>
+
+    <div class="rtp-meta">
+      <div class="rtm-cell"><span class="rtm-label">Engagement Lead</span><span class="rtm-val">Anirudh S.</span></div>
+      <div class="rtm-cell"><span class="rtm-label">FDE Lead</span><span class="rtm-val">Rahul M.</span></div>
+      <div class="rtm-cell"><span class="rtm-label">Champion</span><span class="rtm-val">Yash Kothari</span></div>
+      <div class="rtm-cell"><span class="rtm-label">Pilot Month</span><span class="rtm-val">4 of 6</span></div>
+      <div class="rtm-cell"><span class="rtm-label">Next Gate</span><span class="rtm-val">Jul 5, 2026</span></div>
+    </div>
+  </div>
+
+  <!-- Ornament -->
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;margin:0;">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="74" y1="9.5" x2="682" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="686" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="704" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="722" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="740" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- TL;DR -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Executive Summary</span>
+        <span class="sec-title">TL;DR — For Yash Kothari</span>
+      </div>
+    </div>
+    <div class="tldr">
+      <span class="tldr-label">Auto-summarised · Lab0 · April 11, 2026</span>
+      <p>Month 4 committed to CRUD expansion (BRD §3). Week 13 delivered on that: procurement request creation is live in production, and contract record creation enters spec this week. Co-pilot WAU reached 127 active users, up 23%. The latency spike from Week 12 — context window overflow on large procurement histories — was diagnosed Tuesday and resolved Thursday; response time is back to 1.1 seconds.</p>
+    </div>
+  </div>
+
+  <!-- Plan vs Actual -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Plan vs. Actual — BRD §3</span>
+        <span class="sec-title">Month 4 Commitments</span>
+      </div>
+    </div>
+    <div class="sec-note">Scope committed January 5, 2026. Measured this week.</div>
+    <div class="tbl">
+      <table>
+        <thead><tr>
+          <th>Committed Scope (BRD §3)</th>
+          <th>Status — Week 13</th>
+          <th>Delta</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="tp">Procurement request creation via co-pilot</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Shipped — Apr 9</span></td>
+            <td style="color:var(--O);font-style:italic;font-size:13px;">On plan</td>
+          </tr>
+          <tr>
+            <td class="tp">Contract record creation via co-pilot</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#0364ff"/></svg>Spec in progress — ADOPT-236</span></td>
+            <td style="color:#0364ff;font-style:italic;font-size:13px;">1 wk behind</td>
+          </tr>
+          <tr>
+            <td class="tp">Power user flows for finance leads</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#0364ff"/></svg>Scoped with Yash — Apr 7</span></td>
+            <td style="color:var(--O);font-style:italic;font-size:13px;">On plan</td>
+          </tr>
+          <tr>
+            <td class="tp">Eval pass rate target ≥93% maintained</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#f7d241"/></svg>91.4% — CRUD evals added</span></td>
+            <td style="color:#c07000;font-style:italic;font-size:13px;">Watch — recovering</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="18" y="3" width="13" height="13" fill="#f7d241"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="743" y="3" width="13" height="13" fill="#0364ff"/>
+  </svg>
+
+  <!-- Milestone Tracker -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Plan vs. Actual</span>
+        <span class="sec-title">Milestone Tracker</span>
+      </div>
+    </div>
+    <div class="sec-note">Measured against Engagement Brief §3 (Version 1.0, January 5, 2026)</div>
+    <div class="ms-row">
+      <div class="ms-card done">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#ff5203"/><line x1="4" y1="4" x2="20" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/><line x1="20" y1="4" x2="4" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/></svg>
+        <div class="ms-phase">Month 1</div>
+        <div class="ms-name">Foundation &amp; Integration</div>
+        <div class="ms-date">Done · Jan 31</div>
+      </div>
+      <div class="ms-card done">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#ff5203"/><line x1="4" y1="4" x2="20" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/><line x1="20" y1="4" x2="4" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/></svg>
+        <div class="ms-phase">Month 2</div>
+        <div class="ms-name">QA &amp; Release Hardening</div>
+        <div class="ms-date">Done · Feb 28</div>
+      </div>
+      <div class="ms-card done">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#ff5203"/><line x1="4" y1="4" x2="20" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/><line x1="20" y1="4" x2="4" y2="20" stroke="rgba(252,243,217,.7)" stroke-width="2"/></svg>
+        <div class="ms-phase">Month 3</div>
+        <div class="ms-name">Production Launch</div>
+        <div class="ms-date">Done · Mar 3</div>
+      </div>
+      <div class="ms-card current">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24">
+          <rect width="24" height="24" fill="none" stroke="#0364ff" stroke-width="2"/>
+          <circle cx="12" cy="12" r="6" fill="#0364ff"/>
+        </svg>
+        <div class="ms-phase">Month 4 · Wk 2</div>
+        <div class="ms-name">CRUD Expansion</div>
+        <div class="ms-date">In Progress · Due Apr 30</div>
+      </div>
+      <div class="ms-card planned">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="none" stroke="#c0a070" stroke-width="2"/></svg>
+        <div class="ms-phase">Month 5</div>
+        <div class="ms-name">Optimisation</div>
+        <div class="ms-date">Starts May 1</div>
+      </div>
+      <div class="ms-card planned">
+        <svg class="ms-geo" width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="none" stroke="#c0a070" stroke-width="2"/></svg>
+        <div class="ms-phase">Month 6</div>
+        <div class="ms-name">Evaluation &amp; Renewal</div>
+        <div class="ms-date">Starts Jun 1</div>
+      </div>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="743" y="3" width="13" height="13" fill="#f7d241"/>
+  </svg>
+
+  <!-- Activity Feed -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 1</span>
+        <span class="sec-title">This Week's Activity</span>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg></div>
+      <div>
+        <div class="act-source">Fireflies · Weekly Sync · April 7</div>
+        <div class="act-text"><strong>Procurement request creation CRUD demo shown to Yash Kothari.</strong> He confirmed this is a highly requested capability — "Users are already typing things like 'create a request for Adobe licences for the engineering team' in chat." Aligned to prioritise bulk-request creation next.</div>
+        <div class="act-meta">Attendees: Anirudh S., Rahul M., Yash Kothari · 32 min</div>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg></div>
+      <div>
+        <div class="act-source">Fireflies · FDE Standup · April 8</div>
+        <div class="act-text"><strong>Latency spike root cause identified:</strong> context window overflow on procurement history queries spanning &gt;18 months. Rahul patched with sliding window approach — fix deployed to staging same day; response time down from 1.8s to 1.1s.</div>
+        <div class="act-meta">Attendees: Rahul M., Priya K. · 18 min</div>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg></div>
+      <div>
+        <div class="act-source">Slack · #spendflo-fde · April 9, 9:41 AM</div>
+        <div class="act-text">Rahul M.: <strong>"Latency fix is live in production. Grafana showing avg 1.1s — back to baseline. Eval suite updated to cover the 3 new CRUD scenarios."</strong></div>
+        <div class="act-meta">Bengaluru · reacted 👍 by Anirudh S.</div>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg></div>
+      <div>
+        <div class="act-source">Jira · ADOPT-234 · Closed April 9</div>
+        <div class="act-text"><strong>CRUD: Procurement Request Creation — Production Approved.</strong> Spendflo tech lead signed off after QA (47/47 test cases passing across all user roles). Deployed to production April 9, 3:15 PM IST.</div>
+        <div class="act-meta">Sprint: Month 4 · Assignee: Rahul M.</div>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ffc0f5"/></svg></div>
+      <div>
+        <div class="act-source">Loom · April 9 · Rahul M. · 6:24</div>
+        <div class="act-text"><strong>CRUD Demo — Procurement Request via Co-pilot.</strong> Full walkthrough including multi-role RBAC validation and error handling for budget-exceeded scenarios. <span class="loom-ref">▶ Watch (6:24)</span></div>
+        <div class="act-meta">Shared with Yash Kothari · Spendflo tech lead</div>
+      </div>
+    </div>
+
+    <div class="act-item">
+      <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg></div>
+      <div>
+        <div class="act-source">Fireflies · Internal Review · April 10</div>
+        <div class="act-text"><strong>Month 5 roadmap aligned with Anirudh.</strong> Optimisation sprint to target: eval pass rate 91.4% → 95%, bulk procurement request flows, and expanded NetSuite sync coverage to invoice-level data.</div>
+        <div class="act-meta">Attendees: Anirudh S., Rahul M., Priya K. · 25 min</div>
+      </div>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ff5203"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="743" y="3" width="13" height="13" fill="#ffc0f5"/>
+  </svg>
+
+  <!-- Key Deliverables -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 2</span>
+        <span class="sec-title">Key Deliverables Shipped</span>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Item</th><th>Type</th><th>Status</th><th>Owner</th><th>Artefact</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="tp">CRUD: Procurement Request Creation</td><td>Feature</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Shipped</span></td>
+            <td>Rahul M.</td>
+            <td><span class="loom-ref">▶ Demo (6:24)</span></td>
+          </tr>
+          <tr>
+            <td class="tp">Latency Fix — Context Window Overflow</td><td>Bug Fix</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Resolved</span></td>
+            <td>Rahul M.</td>
+            <td><span class="mono">ADOPT-238</span></td>
+          </tr>
+          <tr>
+            <td class="tp">Eval Suite — 3 CRUD Scenarios Added</td><td>QA</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>Done</span></td>
+            <td>Priya K.</td>
+            <td><span class="mono">ADOPT-239</span></td>
+          </tr>
+          <tr>
+            <td class="tp">CRUD: Contract Record Creation — Spec</td><td>Spec / Next Sprint</td>
+            <td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#0364ff"/></svg>In Progress</span></td>
+            <td>Priya K.</td>
+            <td><span class="mono">ADOPT-236</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="743" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <!-- Agent Health -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 3 — Grafana · April 11, 2026</span>
+        <span class="sec-title">Agent Health</span>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="m-card">
+        <span class="m-label">Production Uptime</span>
+        <div class="m-val" style="color:var(--O)">99.7%</div>
+        <div class="m-delta">Target ≥99.5% <span class="m-pos">✓</span></div>
+      </div>
+      <div class="m-card">
+        <span class="m-label">Eval Pass Rate</span>
+        <div class="m-val" style="color:#c07000">91.4%</div>
+        <div class="m-delta"><span style="color:#c07000">↓ 2.8%</span> WoW · CRUD evals added</div>
+      </div>
+      <div class="m-card">
+        <span class="m-label">Avg Response Time</span>
+        <div class="m-val" style="color:var(--O)">1.1s</div>
+        <div class="m-delta"><span class="m-pos">↓ 0.7s</span> WoW · latency fix</div>
+      </div>
+      <div class="m-card">
+        <span class="m-label">Weekly Active Users</span>
+        <div class="m-val" style="color:var(--B)">127</div>
+        <div class="m-delta"><span class="m-neg">↑ 23%</span> WoW · 17 new users</div>
+      </div>
+    </div>
+    <div class="metrics-sub tbl">
+      <table>
+        <thead><tr><th>Metric</th><th>This Week</th><th>Last Week</th><th>Target</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="tp">Thumbs-Down Rate</td><td>1.8%</td><td>2.1%</td><td>&lt;3%</td><td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#ff5203"/></svg>On Target</span></td></tr>
+          <tr><td class="tp">Sessions per Day (avg)</td><td>41</td><td>33</td><td>—</td><td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#0364ff"/></svg>Trending Up</span></td></tr>
+          <tr><td class="tp">Eval Pass Rate</td><td>91.4%</td><td>94.2%</td><td>≥93%</td><td><span class="sts"><svg class="sts-sq" viewBox="0 0 11 11"><rect width="11" height="11" fill="#f7d241"/></svg>Watch — CRUD evals added</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="18" y="3" width="13" height="13" fill="#f7d241"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="743" y="3" width="13" height="13" fill="#0364ff"/>
+  </svg>
+
+  <!-- Next Week -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 4</span>
+        <span class="sec-title">Next Week's Commitments — April 14–18</span>
+      </div>
+    </div>
+    <div class="nxt-item">
+      <span class="nxt-num">1.</span>
+      <span class="nxt-text">Complete spec and begin implementation of <strong>CRUD: Contract Record Creation</strong> — second CRUD capability, Month 4 plan</span>
+      <span class="nxt-owner">Priya K. · Due Apr 16</span>
+    </div>
+    <div class="nxt-item">
+      <span class="nxt-num">2.</span>
+      <span class="nxt-text">Recover <strong>eval pass rate to ≥93%</strong> — focus on CRUD edge cases and multi-role assertion coverage</span>
+      <span class="nxt-owner">Rahul M. · Due Apr 17</span>
+    </div>
+    <div class="nxt-item">
+      <span class="nxt-num">3.</span>
+      <span class="nxt-text"><strong>Weekly sync with Yash Kothari</strong> — show procurement request creation live in production, align on Month 5 priorities</span>
+      <span class="nxt-owner">Anirudh S. · Apr 14, 2pm PT</span>
+    </div>
+    <div class="nxt-item">
+      <span class="nxt-num">4.</span>
+      <span class="nxt-text">Begin scoping <strong>bulk procurement request flow</strong> — Yash flagged as high priority from user feedback this week</span>
+      <span class="nxt-owner">Rahul M. + Priya K. · Apr 18</span>
+    </div>
+    <div class="nxt-item">
+      <span class="nxt-num">5.</span>
+      <span class="nxt-text">Publish <strong>Month 4 mid-point internal review</strong> — Loom walkthrough of CRUD progress + Grafana snapshot for Adopt leadership</span>
+      <span class="nxt-owner">Anirudh S. · Apr 18</span>
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="18" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="743" y="3" width="13" height="13" fill="#f7d241"/>
+  </svg>
+
+  <!-- Blockers -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 5</span>
+        <span class="sec-title">Blockers &amp; Risks</span>
+      </div>
+    </div>
+    <div class="no-blocker">
+      <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
+      No active blockers. Latency issue resolved April 9. Eval pass rate dip is expected and targeted for recovery next week.
+    </div>
+  </div>
+
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;">
+    <rect x="0" y="3" width="13" height="13" fill="#ffc0f5"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <line x1="36" y1="9.5" x2="720" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="725" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="743" y="3" width="13" height="13" fill="#ffc0f5"/>
+  </svg>
+
+  <!-- Champion draft -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
+      </div>
+      <div class="sec-label-wrap">
+        <span class="sec-num">Report Section 6 — Draft · Review · Edit · Send</span>
+        <span class="sec-title">Your Message to Champion</span>
+      </div>
+    </div>
+    <div class="champ">
+      <span class="champ-label">Draft for Yash Kothari · Head of Product · Spendflo</span>
+      <div class="champ-body">
+        Hi Yash — Week 13 was a big one. We shipped procurement request creation through the co-pilot and saw 127 active users this week, up 23%. We also resolved the latency issue from last week — response times are back to 1.1 seconds. Next week we're building contract record creation and starting to scope the bulk request flow you mentioned. Talk Tuesday at 2pm PT.
+      </div>
+      <div class="champ-actions">
+        <button class="ca-btn">✏ Edit Draft</button>
+        <button class="ca-btn">✉ Send to Champion</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time-saved colophon -->
+  <svg width="100%" height="18" viewBox="0 0 756 18" preserveAspectRatio="xMidYMid meet" style="display:block;margin-top:8px;">
+    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
+    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
+    <line x1="54" y1="9.5" x2="340" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="343" y="4" width="11" height="11" fill="#c0a070"/>
+    <line x1="360" y1="9.5" x2="702" y2="9.5" stroke="#c0a070" stroke-width="1"/>
+    <rect x="706" y="3" width="13" height="13" fill="#f7d241"/>
+    <rect x="724" y="3" width="13" height="13" fill="#0364ff"/>
+    <rect x="742" y="3" width="13" height="13" fill="#ff5203"/>
+  </svg>
+
+  <div class="ts-colophon">
+    <div class="tsc-left">
+      <svg width="40" height="12" viewBox="0 0 40 12">
+        <rect x="0" y="1" width="8" height="8" fill="#ff5203"/>
+        <rect x="11" y="1" width="8" height="8" fill="#0364ff"/>
+        <rect x="22" y="1" width="8" height="8" fill="#f7d241"/>
+        <rect x="33" y="1" width="8" height="8" fill="#ffc0f5"/>
+      </svg>
+      Lab0 Intelligence Platform · Auto-compiled April 11, 2026 · 8:07 AM PST
+    </div>
+    <div class="tsc-right">
+      <div class="tsc-stat"><span class="tsc-label">Compile time</span><strong>4m 12s</strong></div>
+      <span class="tsc-sep">·</span>
+      <div class="tsc-stat"><span class="tsc-label">Items ingested</span><strong>67</strong></div>
+      <span class="tsc-sep">·</span>
+      <div class="tsc-stat"><span class="tsc-label">Reports this engagement</span><strong>13</strong></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+function sw(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
