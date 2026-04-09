@@ -3,10 +3,7 @@
 //  Vanilla JS + Supabase JS v2 (loaded via CDN as window.supabase)
 // ============================================================
 
-const SUPABASE_URL = 'https://gluqcpspyadlqufratoj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdXFjcHNweWFkbHF1ZnJhdG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODk3ODgsImV4cCI6MjA5MTI2NTc4OH0.xZZfrf2OXdkM5cJzIzVo9SpGE3ndJHTiiB-Gar56yuw';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
 let currentEngagementId = null;
 let currentReportId = null;
