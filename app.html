@@ -6,9 +6,1144 @@
 <title>Lab0 · Adopt AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css">
-<link rel="stylesheet" href="print.css" media="print">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #fcf3d9;
+  --ink:   #1a0e08;
+  --ink2:  #3d2a1a;
+  --ink3:  #7a6050;
+  --ink4:  #a89080;
+  --rule:  #c0a070;
+  --rule2: #dcc8a8;
+  --O: #ff5203;
+  --B: #0364ff;
+  --Y: #f7d241;
+  --P: #ffc0f5;
+}
+
+body {
+  background: var(--paper);
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── STRIPE ── */
+.stripe {
+  height: 7px;
+  display: flex;
+  position: sticky; top: 0; z-index: 300;
+}
+.stripe div { flex: 1; }
+
+/* ── GLOBAL NAV ── */
+.global-nav {
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 7px; z-index: 299;
+}
+.gn-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gn-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+.gn-squares { display: flex; gap: 3px; align-items: center; }
+.gn-sep { color: var(--ink4); font-weight: 400; margin: 0 2px; }
+.gn-sub { color: var(--ink3); font-weight: 400; font-size: 12px; letter-spacing: .04em; }
+.gn-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink2);
+}
+.avatar-badge {
+  width: 24px; height: 24px;
+  background: var(--O);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.gear-btn {
+  background: none; border: none;
+  color: var(--ink3);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.gear-btn:hover { color: var(--ink); }
+
+/* ── VIEWS ── */
+.view { display: none; }
+
+/* ── PAGE WRAPPER ── */
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+}
+.page-wrap-project {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 40px 80px;
+}
+
+/* ── ORNAMENTAL SVG DIVIDER ── */
+.orn-rule {
+  display: block;
+  width: 100%;
+  margin: 28px 0;
+}
+
+/* ── SECTION HEADER ROW ── */
+.sec-hd-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.page-h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--ink);
+}
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--rule);
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--O); color: var(--O); }
+.btn-dark {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.btn-dark:hover { background: var(--ink2); color: var(--paper); border-color: var(--ink2); }
+.btn-orange {
+  background: var(--O);
+  color: var(--paper);
+  border-color: var(--O);
+}
+.btn-orange:hover { background: #e04800; border-color: #e04800; color: var(--paper); }
+.page-sub {
+  font-size: 13px;
+  color: var(--ink3);
+  margin-bottom: 4px;
+}
+
+/* ── CARDS GRID ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 4px;
+}
+.card {
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  background: var(--paper);
+}
+.card-stripe {
+  display: flex;
+  height: 5px;
+}
+.card-stripe div { flex: 1; }
+.card-body {
+  padding: 18px 20px;
+}
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-company {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--rule);
+  padding: 3px 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.card-divider {
+  border: none;
+  border-top: 1px solid var(--rule2);
+  margin: 10px 0;
+}
+.card-row {
+  display: flex;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--ink2);
+  line-height: 1.5;
+  padding: 2px 0;
+}
+.card-row-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  width: 72px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.card-actions .btn {
+  font-size: 9px;
+  padding: 5px 10px;
+}
+
+/* ── PULSE ANIMATION ── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+.pulse { animation: blink 2s infinite; }
+
+/* ── PROJECT HEADER ── */
+.breadcrumb {
+  font-size: 13px;
+  color: var(--ink4);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.breadcrumb-btn {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--ink3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+}
+.breadcrumb-btn:hover { color: var(--O); }
+.proj-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 6px;
+}
+.proj-left { flex: 1; }
+.proj-company {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.proj-status-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: .1em;
+  border: 1.5px solid var(--rule);
+  padding: 4px 12px;
+}
+.proj-period {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--ink3);
+  font-style: normal;
+}
+.proj-subtitle {
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 14px;
+}
+.proj-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.team-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.team-badge-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.team-badge {
+  width: 26px; height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--paper);
+  cursor: default;
+}
+.team-badge-wrap:hover .badge-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+}
+.badge-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .06em;
+  padding: 4px 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+}
+.badge-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--ink);
+}
+
+/* ── TABS ── */
+.tabs-row {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+  margin-top: 20px;
+}
+.tab-btn {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  cursor: pointer;
+  padding: 10px 20px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .15s;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--ink); border-bottom-color: var(--O); }
+
+/* ── BRD COLOPHON ── */
+.lab0-colophon {
+  border: 1px solid var(--rule);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: rgba(26,14,8,.035);
+  margin-bottom: 0;
+}
+.lab0-mark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lm-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--ink);
+}
+.lab0-sources {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.src {
+  font-size: 12px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.lab0-timing {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: var(--ink3);
+  text-align: right;
+  white-space: nowrap;
+}
+.lab0-timing strong {
+  color: var(--ink);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+.colophon-action {
+  border-top: 1px solid var(--rule);
+  padding: 10px 20px;
+  background: rgba(26,14,8,.02);
+}
+.colophon-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--O);
+  text-decoration: none;
+  border-bottom: 1px solid var(--O);
+  padding-bottom: 1px;
+}
+.colophon-link:hover { opacity: .75; }
+
+/* ── INFO GRID ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule);
+}
+.ig-cell {
+  padding: 11px 15px;
+  border-right: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+}
+.ig-cell:nth-child(4n) { border-right: none; }
+.ig-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.ig-val { font-size: 14px; font-weight: 500; color: var(--ink2); }
+
+/* ── SECTION HEADING ── */
+.sec-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+  margin-top: 32px;
+}
+.sec-mark { flex-shrink: 0; padding-top: 4px; }
+.sec-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 2px;
+}
+.sec-title {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+/* ── OBJECTIVES ── */
+.obj-item {
+  display: flex;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--rule2);
+}
+.obj-item:last-child { border-bottom: none; }
+.obj-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
+.obj-desc { font-size: 14px; color: var(--ink3); line-height: 1.65; }
+
+/* ── TABLES ── */
+.tbl { border: 1px solid var(--rule); width: 100%; overflow: hidden; }
+.tbl table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tbl thead tr { background: rgba(26,14,8,.04); }
+.tbl th {
+  padding: 9px 13px;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  border-bottom: 1px solid var(--rule);
+}
+.tbl td {
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--rule2);
+  color: var(--ink2);
+  vertical-align: top;
+  line-height: 1.55;
+  font-size: 14px;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: rgba(26,14,8,.02); }
+.sts {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.status-done { color: var(--ink3); }
+.status-inprog { color: var(--B); }
+.status-planned { color: var(--ink4); }
+.status-target { color: var(--ink2); }
+.status-watch { color: #b8900a; }
+.status-ontrack { color: var(--O); }
+
+/* ── COMMS VIEW ── */
+.comms-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.comms-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink2);
+}
+.week-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--rule);
+  padding: 3px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--ink3);
+}
+.comms-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink3);
+}
+.filter-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chip {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  border: 1px solid var(--rule);
+  padding: 3px 10px;
+  cursor: pointer;
+  color: var(--ink3);
+  background: none;
+  transition: all .12s;
+}
+.chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip:hover:not(.active) { border-color: var(--O); color: var(--O); }
+.comms-note {
+  font-size: 12px;
+  color: var(--ink4);
+  margin-bottom: 10px;
+}
+.comm-counter {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: var(--ink4);
+  text-transform: uppercase;
+  padding: 8px 0;
+  border-top: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+  margin-bottom: 4px;
+}
+
+/* ── COMM ITEMS ── */
+.comm-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule2);
+  transition: opacity .15s;
+}
+.comm-item:last-child { border-bottom: none; }
+.comm-item.excluded { opacity: .4; }
+.comm-cb-wrap {
+  flex-shrink: 0;
+  padding-top: 3px;
+}
+.comm-cb {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .12s;
+}
+.comm-cb.checked {
+  background: var(--O);
+  border-color: var(--O);
+}
+.comm-cb svg { display: none; }
+.comm-cb.checked svg { display: block; }
+.comm-icon { flex-shrink: 0; padding-top: 3px; }
+.comm-body { flex: 1; min-width: 0; }
+.comm-source {
+  font-family: 'Inter', sans-serif;
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 3px;
+}
+.comm-headline { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; line-height: 1.45; }
+.comm-text { font-size: 14px; color: var(--ink2); line-height: 1.6; }
+.comm-meta { font-size: 12px; font-style: italic; color: var(--ink4); margin-top: 4px; }
+.loom-link {
+  color: var(--O);
+  border-bottom: 1px solid var(--O);
+  cursor: pointer;
+  font-size: 13px;
+  font-style: italic;
+  display: inline;
+}
+
+/* ── GENERATE BUTTON ── */
+.generate-btn {
+  display: block;
+  width: 100%;
+  background: var(--O);
+  color: var(--paper);
+  border: none;
+  padding: 16px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background .15s;
+}
+.generate-btn:hover { background: #e04800; }
+.generate-note {
+  font-size: 12px;
+  color: var(--ink4);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ── REPORTS VIEW ── */
+.reports-layout {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--rule);
+  margin-top: 24px;
+}
+.report-history {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--rule);
+}
+.rh-header {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.rh-item {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--rule2);
+  cursor: pointer;
+  transition: background .12s;
+}
+.rh-item:hover { background: rgba(26,14,8,.03); }
+.rh-item.active { background: rgba(255,82,3,.06); }
+.rh-item:last-child { border-bottom: none; }
+.rh-week {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.rh-period { font-size: 12px; color: var(--ink4); }
+.rh-chip {
+  display: inline-flex;
+  font-family: 'Inter', sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  border: 1px solid var(--rule2);
+  padding: 1px 6px;
+  color: var(--ink4);
+  margin-top: 3px;
+}
+.rh-chip.draft { border-color: var(--B); color: var(--B); }
+.rh-show-all {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--ink3);
+  cursor: pointer;
+  border-top: 1px solid var(--rule2);
+}
+.rh-show-all:hover { color: var(--O); }
+.report-viewer { flex: 1; min-width: 0; }
+.rv-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rv-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.rv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.rv-actions .btn { font-size: 9px; padding: 5px 12px; }
+.rv-body { padding: 0 24px 32px; }
+
+/* ── REPORT TITLE BLOCK ── */
+.rtp {
+  text-align: center;
+  padding: 32px 0 28px;
+  border: 1px solid var(--rule);
+  border-top: none;
+  border-bottom: 1.5px solid var(--rule);
+  margin-bottom: 0;
+}
+.rtp-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 14px;
+}
+.rtp-week-svg { margin: 0 auto 8px; display: block; }
+.rtp-week-of {
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 4px;
+}
+.rtp-period {
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 20px;
+}
+.rtp-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.status-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1.5px solid var(--rule);
+  padding: 6px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: .12em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.rtp-meta {
+  display: inline-flex;
+  border: 1px solid var(--rule2);
+  overflow: hidden;
+}
+.rtm-cell {
+  padding: 8px 16px;
+  border-right: 1px solid var(--rule2);
+  text-align: center;
+}
+.rtm-cell:last-child { border-right: none; }
+.rtm-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 3px;
+}
+.rtm-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+
+/* ── TL;DR ── */
+.tldr {
+  border-left: 3px solid var(--O);
+  padding: 14px 20px;
+  background: rgba(255,82,3,.04);
+  margin: 20px 0;
+}
+.tldr-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--O);
+  display: block;
+  margin-bottom: 8px;
+}
+.tldr p { font-size: 14px; color: var(--ink); line-height: 1.65; }
+
+/* ── CHAMPION NOTE ── */
+.champ {
+  border: 1px solid var(--rule);
+  padding: 20px 24px;
+  position: relative;
+  margin: 20px 0;
+}
+.champ::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--P);
+}
+.champ-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 10px;
+}
+.champ-body {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+.champ-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+.champ-actions .btn { font-size: 9px; padding: 5px 12px; }
+
+/* ── NEXT WEEK ITEMS ── */
+.nxt-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule2);
+  font-size: 14.5px;
+}
+.nxt-item:last-child { border-bottom: none; }
+.nxt-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--ink4);
+  width: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.nxt-text { flex: 1; color: var(--ink2); line-height: 1.5; }
+.nxt-owner { font-size: 12px; color: var(--ink4); white-space: nowrap; }
+
+/* ── ACT ITEMS (compact) ── */
+.act-item {
+  display: flex;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--rule2);
+}
+.act-item:last-child { border-bottom: none; }
+.act-icon { flex-shrink: 0; padding-top: 3px; }
+.act-source {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 3px;
+}
+.act-text { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+.act-meta { font-size: 12px; color: var(--ink4); margin-top: 2px; }
+
+/* ── PROMPT PANEL ── */
+.prompt-toggle {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+  margin: 20px 0 0;
+}
+.prompt-toggle:hover { color: var(--O); }
+.prompt-panel {
+  display: none;
+  margin-top: 12px;
+  border: 1px solid var(--rule);
+  padding: 16px;
+  background: rgba(26,14,8,.025);
+}
+.prompt-panel textarea {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  color: var(--ink2);
+  background: var(--paper);
+  border: 1px solid var(--rule2);
+  padding: 10px 14px;
+  line-height: 1.65;
+  resize: vertical;
+  min-height: 120px;
+  margin-bottom: 10px;
+}
+.prompt-panel textarea:focus { outline: 1px solid var(--O); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,14,8,.5);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-panel {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.modal-close {
+  background: none; border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: var(--ink3);
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--O); }
+.modal-body { padding: 20px 24px; }
+.modal-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.modal-col-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  display: block;
+  margin-bottom: 4px;
+}
+.modal-col-desc {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+.modal-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule2);
+  font-size: 13.5px;
+  color: var(--ink2);
+}
+.modal-user-row:last-of-type { border-bottom: none; }
+.modal-remove {
+  background: none; border: none;
+  color: var(--ink4);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  transition: color .12s;
+}
+.modal-remove:hover { color: var(--O); }
+.modal-add-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.modal-add-row input {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  border: 1px solid var(--rule2);
+  background: var(--paper);
+  padding: 6px 10px;
+  color: var(--ink);
+}
+.modal-add-row input:focus { outline: 1px solid var(--O); }
+.modal-sep { border: none; border-top: 1px solid var(--rule); margin: 16px 0; }
+.modal-admin { margin-top: 4px; }
+.modal-admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 13.5px;
+  color: var(--ink2);
+}
+.owner-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--ink4);
+  border: 1px solid var(--rule2);
+  padding: 2px 8px;
+}
+
+/* ── SUB-SECTION HEADER ── */
+.subsec-hd {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  padding: 14px 0 8px;
+  border-bottom: 1px solid var(--rule2);
+  margin-bottom: 0;
+}
+
+/* ── MISC ── */
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mb-0 { margin-bottom: 0; }
+
+.no-blocker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--Y);
+  background: rgba(247,210,65,.1);
+  font-size: 14.5px;
+  font-style: italic;
+  color: var(--ink2);
+}
+</style>
 </head>
 <body>
 
@@ -30,19 +1165,14 @@
         <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#f7d241"/></svg>
         <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ffc0f5"/></svg>
       </div>
-      <a href="https://lab0.ai" target="_blank" class="gn-lab0-link">Lab0</a>
+      Lab0
       <span class="gn-sep">&nbsp;·&nbsp;</span>
       <span class="gn-sub">Adopt AI</span>
     </div>
     <div class="gn-right">
       <div class="avatar-badge">AS</div>
       <span>Anirudh S.</span>
-      <button class="gear-btn" title="Settings" onclick="goTo('view-user-control')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
+      <button class="gear-btn" title="Settings">&#9881;</button>
     </div>
   </div>
 </nav>
@@ -56,7 +1186,7 @@
 
   <div class="sec-hd-row">
     <h1 class="page-h1">All Engagements</h1>
-    <button class="btn" onclick="void(0)">+ New engagement</button>
+    <button class="btn" onclick="void(0)">+ New Engagement</button>
   </div>
   <p class="page-sub">7 active engagements &nbsp;·&nbsp; 2 pending gates this month</p>
 
@@ -73,10 +1203,10 @@
     <rect x="1004" y="3" width="13" height="13" fill="#ff5203"/>
   </svg>
 
-  <!-- Cards grid — populated by loadEngagements() -->
+  <!-- Cards grid -->
   <div class="cards-grid">
 
-    <!-- Card 1: Spendflo (static fallback, replaced by JS) -->
+    <!-- Card 1: Spendflo -->
     <div class="card">
       <div class="card-stripe">
         <div style="background:var(--O)"></div>
@@ -98,12 +1228,12 @@
           <span>Anirudh S.</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">FDE</span>
-          <span>Rahul M.</span>
+          <span class="card-row-label">Progress</span>
+          <span>Month 4 of 6</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">Start</span>
-          <span>Jan 5, 2026</span>
+          <span class="card-row-label">Last Report</span>
+          <span>Week 13 &nbsp;·&nbsp; Apr 11</span>
         </div>
         <div class="card-row">
           <span class="card-row-label">Gate</span>
@@ -111,8 +1241,8 @@
         </div>
         <hr class="card-divider">
         <div class="card-actions">
-          <button class="btn" onclick="openEngagement('11111111-1111-1111-1111-111111111111')">View project</button>
-          <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+          <button class="btn" onclick="goTo('view-project'); setActiveTab('brd')">View Project</button>
+          <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
         </div>
       </div>
     </div>
@@ -139,12 +1269,12 @@
           <span>Krishna P.</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">FDE</span>
-          <span>Priya K.</span>
+          <span class="card-row-label">Progress</span>
+          <span>Month 2 of 6</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">Start</span>
-          <span>Feb 1, 2026</span>
+          <span class="card-row-label">Last Report</span>
+          <span>Week 8 &nbsp;·&nbsp; Mar 14</span>
         </div>
         <div class="card-row">
           <span class="card-row-label">Gate</span>
@@ -152,13 +1282,13 @@
         </div>
         <hr class="card-divider">
         <div class="card-actions">
-          <button class="btn" onclick="openEngagement('22222222-2222-2222-2222-222222222222')">View project</button>
-          <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
         </div>
       </div>
     </div>
 
-    <!-- Card 3: TechCorp POC -->
+    <!-- Card 3: RallyUp -->
     <div class="card">
       <div class="card-stripe">
         <div style="background:var(--O)"></div>
@@ -168,10 +1298,10 @@
       </div>
       <div class="card-body">
         <div class="card-top">
-          <div class="card-company">TechCorp POC</div>
-          <div class="status-chip" style="border-color:var(--P);">
-            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
-            Pre-pilot
+          <div class="card-company">RallyUp</div>
+          <div class="status-chip" style="border-color:var(--B);color:var(--B);">
+            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#0364ff"/></svg>
+            Gate Overdue
           </div>
         </div>
         <hr class="card-divider">
@@ -180,21 +1310,185 @@
           <span>Anirudh S.</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">FDE</span>
-          <span>Rahul M.</span>
+          <span class="card-row-label">Progress</span>
+          <span>Month 1 of 6</span>
         </div>
         <div class="card-row">
-          <span class="card-row-label">Start</span>
-          <span>Mar 1, 2026</span>
+          <span class="card-row-label">Last Report</span>
+          <span>Week 3 &nbsp;·&nbsp; Feb 21</span>
         </div>
         <div class="card-row">
           <span class="card-row-label">Gate</span>
-          <span>Jun 1, 2026</span>
+          <span style="color:var(--B);font-weight:600;">! Mar 31, 2026</span>
         </div>
         <hr class="card-divider">
         <div class="card-actions">
-          <button class="btn" onclick="openEngagement('33333333-3333-3333-3333-333333333333')">View project</button>
-          <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Blackstone Shipping -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">Blackstone Shipping</div>
+          <div class="status-chip" style="border-color:var(--Y);">
+            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#f7d241"/></svg>
+            Completed
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Rahul M.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Progress</span>
+          <span>6 of 6 months</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Last Report</span>
+          <span>Week 26 &nbsp;·&nbsp; Dec 2025</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span style="color:var(--ink4);font-style:italic;">Converted to annual</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Solo Brands -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">Solo Brands</div>
+          <div class="status-chip" style="border-color:var(--P);">
+            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
+            Pre-pilot
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Krishna P.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Progress</span>
+          <span>BRD in progress</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Kickoff</span>
+          <span>Apr 20, 2026</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span style="color:var(--ink4);">&mdash;</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: UHY -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">UHY</div>
+          <div class="status-chip">
+            <svg width="8" height="8" viewBox="0 0 8 8" class="pulse"><rect width="8" height="8" fill="#ff5203"/></svg>
+            Active
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Anirudh S.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Progress</span>
+          <span>Month 3 of 6</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Last Report</span>
+          <span>Week 10 &nbsp;·&nbsp; Mar 28</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span>Jul 1, 2026</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 7: Truefoundry -->
+    <div class="card">
+      <div class="card-stripe">
+        <div style="background:var(--O)"></div>
+        <div style="background:var(--B)"></div>
+        <div style="background:var(--Y)"></div>
+        <div style="background:var(--P)"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-company">Truefoundry</div>
+          <div class="status-chip" style="border-color:var(--P);">
+            <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
+            Pre-pilot
+          </div>
+        </div>
+        <hr class="card-divider">
+        <div class="card-row">
+          <span class="card-row-label">Lead</span>
+          <span>Priya K.</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Progress</span>
+          <span>Discovery done</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">BRD Draft</span>
+          <span>Due Apr 15</span>
+        </div>
+        <div class="card-row">
+          <span class="card-row-label">Gate</span>
+          <span style="color:var(--ink4);">&mdash;</span>
+        </div>
+        <hr class="card-divider">
+        <div class="card-actions">
+          <button class="btn">View Project</button>
+          <button class="btn">Manage Access</button>
         </div>
       </div>
     </div>
@@ -205,7 +1499,7 @@
 
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 2: Project BRD Tab                                -->
+<!--  VIEW 2: Spendflo BRD Tab                               -->
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="view-project" class="view">
 <div class="page-wrap-project">
@@ -247,16 +1541,14 @@
             <div class="badge-tooltip">Krishna P.</div>
           </div>
         </div>
-        <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
       </div>
     </div>
   </div>
   <div class="tabs-row">
     <button class="tab-btn active" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
-    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Comms</button>
     <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
-    <button class="tab-btn" data-tab="integrations" onclick="goTo('view-integrations'); setActiveTab('integrations'); loadProjectIntegrations(currentEngagementId)">Integrations</button>
-    <button class="tab-btn" data-tab="inbox" onclick="goTo('view-inbox'); setActiveTab('inbox'); loadInbox(currentEngagementId)">Inbox</button>
   </div>
   <!-- /Project Header -->
 
@@ -291,7 +1583,7 @@
       </div>
     </div>
     <div class="colophon-action">
-      <a href="adopt-euclid.html" target="_blank" class="colophon-link">View full document &rarr;</a>
+      <a href="adopt-euclid.html" target="_blank" class="colophon-link">View Full Document &rarr;</a>
     </div>
   </div>
 
@@ -334,7 +1626,7 @@
     <div class="ig-cell"><span class="ig-label">Start</span><span class="ig-val">Jan 5, 2026</span></div>
     <div class="ig-cell" style="border-bottom:none;"><span class="ig-label">Month 3 Gate</span><span class="ig-val">Apr 5, 2026 &nbsp;<span style="color:var(--O);">&#10003; Passed</span></span></div>
     <div class="ig-cell" style="border-bottom:none;"><span class="ig-label">Month 6 Gate</span><span class="ig-val">Jul 5, 2026</span></div>
-    <div class="ig-cell" style="border-bottom:none;border-right:none;"></div>
+    <div class="ig-cell" style="border-bottom:none;border-right:none;" colspan="2"></div>
     <div class="ig-cell" style="border-bottom:none;border-right:none;"></div>
   </div>
 
@@ -352,9 +1644,8 @@
       <span class="sec-num">Section 2</span>
       <div class="sec-title">Business Objectives</div>
     </div>
-    <button class="sec-edit-btn" data-section="objectives">&#9998;</button>
   </div>
-  <div id="sec-objectives">
+  <div>
     <div class="obj-item">
       <svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-top:5px;"><rect width="14" height="14" fill="#ff5203"/></svg>
       <div>
@@ -392,59 +1683,56 @@
       <span class="sec-num">Section 3</span>
       <div class="sec-title">Delivery Plan</div>
     </div>
-    <button class="sec-edit-btn" data-section="delivery_plan">&#9998;</button>
   </div>
-  <div id="sec-delivery_plan">
-    <div class="tbl">
-      <table>
-        <thead>
-          <tr>
-            <th>Month</th>
-            <th>Phase</th>
-            <th>Key Activities</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Jan 2026</td>
-            <td>Foundation &amp; Integration</td>
-            <td>REST API, RBAC, agent config</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
-          </tr>
-          <tr>
-            <td>Feb 2026</td>
-            <td>QA &amp; Release Hardening</td>
-            <td>Full QA suite, SOP docs, staging sign-off</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
-          </tr>
-          <tr>
-            <td>Mar 2026</td>
-            <td>Production Launch</td>
-            <td>Go-live, pilot cohort, baseline metrics</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
-          </tr>
-          <tr>
-            <td>Apr 2026</td>
-            <td>CRUD Expansion</td>
-            <td>Procurement + contract creation, power user flows</td>
-            <td><span class="sts status-inprog"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#0364ff"/></svg>In Progress</span></td>
-          </tr>
-          <tr>
-            <td>May 2026</td>
-            <td>Optimisation</td>
-            <td>Eval tuning, additional use cases</td>
-            <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
-          </tr>
-          <tr>
-            <td>Jun 2026</td>
-            <td>Evaluation &amp; Renewal</td>
-            <td>Retrospective, ROI measurement, renewal</td>
-            <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="tbl">
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Phase</th>
+          <th>Key Activities</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jan 2026</td>
+          <td>Foundation &amp; Integration</td>
+          <td>REST API, RBAC, agent config</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+        </tr>
+        <tr>
+          <td>Feb 2026</td>
+          <td>QA &amp; Release Hardening</td>
+          <td>Full QA suite, SOP docs, staging sign-off</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+        </tr>
+        <tr>
+          <td>Mar 2026</td>
+          <td>Production Launch</td>
+          <td>Go-live, pilot cohort, baseline metrics</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>Done &#10003;</span></td>
+        </tr>
+        <tr>
+          <td>Apr 2026</td>
+          <td>CRUD Expansion</td>
+          <td>Procurement + contract creation, power user flows</td>
+          <td><span class="sts status-inprog"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#0364ff"/></svg>In Progress</span></td>
+        </tr>
+        <tr>
+          <td>May 2026</td>
+          <td>Optimisation</td>
+          <td>Eval tuning, additional use cases</td>
+          <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
+        </tr>
+        <tr>
+          <td>Jun 2026</td>
+          <td>Evaluation &amp; Renewal</td>
+          <td>Retrospective, ROI measurement, renewal</td>
+          <td><span class="sts status-planned"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#a89080"/></svg>Planned</span></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Section 4: Success Metrics -->
@@ -461,53 +1749,54 @@
       <span class="sec-num">Section 4</span>
       <div class="sec-title">Success Metrics</div>
     </div>
-    <button class="sec-edit-btn" data-section="success_metrics">&#9998;</button>
   </div>
-  <div id="sec-success_metrics">
-    <div class="tbl">
-      <table>
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>Target</th>
-            <th>Current</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Co-pilot WAU</td>
-            <td>&gt;30% of users</td>
-            <td>23% WAU</td>
-            <td><span class="sts status-watch"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#f7d241"/></svg>Watch</span></td>
-          </tr>
-          <tr>
-            <td>Navigation Shift</td>
-            <td>&gt;40% by Month 6</td>
-            <td>18% shift</td>
-            <td><span class="sts status-ontrack"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff5203"/></svg>On track</span></td>
-          </tr>
-          <tr>
-            <td>Response Time</td>
-            <td>&lt;1.5s</td>
-            <td>1.1s</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
-          </tr>
-          <tr>
-            <td>Eval Pass Rate</td>
-            <td>&#8805;93% Month 3</td>
-            <td>93.2%</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
-          </tr>
-          <tr>
-            <td>Thumbs-Down Rate</td>
-            <td>&lt;3%</td>
-            <td>1.8%</td>
-            <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="tbl">
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Target</th>
+          <th>Current</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Co-pilot WAU</td>
+          <td>&gt;30% of users</td>
+          <td>23% WAU</td>
+          <td><span class="sts status-watch"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#f7d241"/></svg>Watch</span></td>
+        </tr>
+        <tr>
+          <td>Navigation Shift</td>
+          <td>&gt;40% by Month 6</td>
+          <td>18% shift</td>
+          <td><span class="sts status-ontrack"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff5203"/></svg>On track</span></td>
+        </tr>
+        <tr>
+          <td>Response Time</td>
+          <td>&lt;1.5s</td>
+          <td>1.1s</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+        </tr>
+        <tr>
+          <td>Eval Pass Rate</td>
+          <td>&#8805;93% Month 3</td>
+          <td>93.2%</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+        </tr>
+        <tr>
+          <td>Thumbs-Down Rate</td>
+          <td>&lt;3%</td>
+          <td>1.8%</td>
+          <td><span class="sts status-done"><svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" fill="#7a6050"/></svg>On target &#10003;</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:20px;">
+    <button class="btn">Edit BRD</button>
   </div>
 
 </div><!-- /page-wrap-project -->
@@ -515,12 +1804,12 @@
 
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 3: Activity Tab                                    -->
+<!--  VIEW 3: Spendflo Comms Tab                             -->
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="view-comms" class="view">
 <div class="page-wrap-project">
 
-  <!-- Project Header -->
+  <!-- Project Header (identical) -->
   <div class="breadcrumb">
     <button class="breadcrumb-btn" onclick="goTo('view-admin')">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -557,20 +1846,18 @@
             <div class="badge-tooltip">Krishna P.</div>
           </div>
         </div>
-        <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
       </div>
     </div>
   </div>
   <div class="tabs-row">
     <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
-    <button class="tab-btn active" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn active" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Comms</button>
     <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
-    <button class="tab-btn" data-tab="integrations" onclick="goTo('view-integrations'); setActiveTab('integrations'); loadProjectIntegrations(currentEngagementId)">Integrations</button>
-    <button class="tab-btn" data-tab="inbox" onclick="goTo('view-inbox'); setActiveTab('inbox'); loadInbox(currentEngagementId)">Inbox</button>
   </div>
   <!-- /Project Header -->
 
-  <!-- Activity top bar -->
+  <!-- Comms top bar -->
   <div class="mt-24">
     <div class="comms-topbar">
       <div class="comms-left">
@@ -591,7 +1878,7 @@
             <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#ffc0f5"/></svg>Loom
           </button>
           <button class="chip">
-            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#f7d241"/></svg>Jira
+            <svg width="7" height="7" viewBox="0 0 7 7" style="display:inline;vertical-align:middle;margin-right:3px;"><rect width="7" height="7" fill="#f7d241"/></svg>ClickUp
           </button>
         </div>
       </div>
@@ -600,7 +1887,7 @@
     <div class="comm-counter" id="comm-counter">8 items &nbsp;·&nbsp; 7 selected &nbsp;·&nbsp; 1 excluded</div>
   </div>
 
-  <!-- Activity Feed — populated by loadActivities() -->
+  <!-- Activity Feed -->
   <div id="comm-feed">
 
     <!-- Item 1 -->
@@ -636,7 +1923,7 @@
         <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
       </div>
       <div class="comm-body">
-        <div class="comm-source">Jira &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Created Apr 14</div>
+        <div class="comm-source">ClickUp &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Created Apr 14</div>
         <div class="comm-headline">CRUD: Contract Record Creation — implementation started.</div>
         <div class="comm-text">CRUD: Contract Record Creation ticket created and implementation started.</div>
         <div class="comm-meta">Sprint: Month 4 &nbsp;·&nbsp; Assignee: Rahul M. &nbsp;·&nbsp; Due Apr 18</div>
@@ -716,7 +2003,7 @@
         <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
       </div>
       <div class="comm-body">
-        <div class="comm-source">Jira &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Status Update &nbsp;·&nbsp; Apr 17</div>
+        <div class="comm-source">ClickUp &nbsp;·&nbsp; ADOPT-240 &nbsp;·&nbsp; Status Update &nbsp;·&nbsp; Apr 17</div>
         <div class="comm-headline">CRUD: Contract Record Creation — merged to staging.</div>
         <div class="comm-text">Merged to staging. Awaiting Spendflo tech lead sign-off before production deploy.</div>
         <div class="comm-meta">Assignee: Rahul M. &nbsp;·&nbsp; Sprint: Month 4</div>
@@ -766,8 +2053,8 @@
   </div><!-- /comm-feed -->
 
   <!-- Generate button -->
-  <button class="generate-btn" onclick="generateReport()">
-    Generate report with Claude &rarr;
+  <button class="generate-btn" onclick="goTo('view-reports'); setActiveTab('reports')">
+    Generate Week 14 Report &rarr;
   </button>
   <p class="generate-note">7 items selected &nbsp;·&nbsp; pulling BRD Section 3 for plan context &nbsp;·&nbsp; master prompt v2</p>
 
@@ -776,12 +2063,12 @@
 
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 4: Reports Tab                                     -->
+<!--  VIEW 4: Spendflo Reports Tab                           -->
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="view-reports" class="view">
 <div class="page-wrap-project">
 
-  <!-- Project Header -->
+  <!-- Project Header (identical) -->
   <div class="breadcrumb">
     <button class="breadcrumb-btn" onclick="goTo('view-admin')">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -818,13 +2105,13 @@
             <div class="badge-tooltip">Krishna P.</div>
           </div>
         </div>
-        <button class="btn" onclick="showModal('modal-permissions')">Manage access</button>
+        <button class="btn" onclick="showModal('modal-permissions')">Manage Access</button>
       </div>
     </div>
   </div>
   <div class="tabs-row">
     <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
-    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
+    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Comms</button>
     <button class="tab-btn active" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
   </div>
   <!-- /Project Header -->
@@ -832,25 +2119,46 @@
   <!-- Reports layout -->
   <div class="reports-layout">
 
-    <!-- Left: Report History — populated by loadReports() -->
+    <!-- Left: Report History -->
     <div class="report-history">
       <div class="rh-header">Report History</div>
 
       <div class="rh-item active">
         <div class="rh-week">Week 14</div>
-        <div class="rh-period">Apr 14-18</div>
+        <div class="rh-period">Apr 14–18</div>
         <div class="rh-chip draft">Draft</div>
       </div>
       <div class="rh-item">
         <div class="rh-week">Week 13</div>
-        <div class="rh-period">Apr 7-11</div>
+        <div class="rh-period">Apr 7–11</div>
         <div class="rh-chip">Sent</div>
       </div>
       <div class="rh-item">
         <div class="rh-week">Week 12</div>
-        <div class="rh-period">Mar 31-Apr 4</div>
+        <div class="rh-period">Mar 31–Apr 4</div>
         <div class="rh-chip">Sent</div>
       </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 11</div>
+        <div class="rh-period">Mar 24–28</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 10</div>
+        <div class="rh-period">Mar 17–21</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 9</div>
+        <div class="rh-period">Mar 10–14</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+      <div class="rh-item">
+        <div class="rh-week">Week 8</div>
+        <div class="rh-period">Mar 3–7</div>
+        <div class="rh-chip">Sent</div>
+      </div>
+      <div class="rh-show-all">Show all 14 earlier reports &#9662;</div>
     </div><!-- /report-history -->
 
     <!-- Right: Report Viewer -->
@@ -858,31 +2166,15 @@
 
       <!-- Action bar -->
       <div class="rv-action-bar">
-        <div class="rv-title">Week 14 &nbsp;·&nbsp; Draft &nbsp;·&nbsp; Apr 14-18, 2026</div>
+        <div class="rv-title">Week 14 &nbsp;·&nbsp; Draft &nbsp;·&nbsp; Apr 14–18, 2026</div>
         <div class="rv-actions">
-          <button class="btn rv-edit-btn">Edit draft</button>
-          <button class="btn rv-ai-btn">Edit with AI</button>
-          <button class="btn rv-export-btn">Export PDF</button>
-          <button class="btn btn-dark">Send to champion &rarr;</button>
+          <button class="btn">Edit Draft</button>
+          <button class="btn">Export PDF</button>
+          <button class="btn btn-dark">Send to Champion &rarr;</button>
         </div>
       </div>
 
-      <!-- Save bar (shown during manual edit mode) -->
-      <div class="rv-save-bar">
-        <button class="btn btn-orange rv-save-confirm">Save draft</button>
-        <button class="btn rv-save-cancel">Cancel</button>
-      </div>
-
-      <!-- AI prompt bar (shown when Edit with AI is clicked) -->
-      <div class="rv-ai-bar" id="rv-ai-bar">
-        <textarea id="rv-ai-prompt" placeholder="e.g. make the TL;DR more concise, rewrite the champion note in a warmer tone, add a blocker about the SSO integration..." rows="2"></textarea>
-        <div class="rv-ai-actions">
-          <button class="btn btn-orange rv-ai-submit" onclick="editWithAI()">Edit with AI</button>
-          <button class="btn rv-ai-cancel" onclick="closeAiBar()">Cancel</button>
-        </div>
-      </div>
-
-      <!-- Report body — replaced by loadReportVersion() -->
+      <!-- Report body -->
       <div class="rv-body">
 
         <!-- Lab0 colophon -->
@@ -907,7 +2199,7 @@
             </span>
             <span class="src">
               <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#f7d241"/></svg>
-              Jira &nbsp;2 tickets
+              ClickUp &nbsp;2 tickets
             </span>
             <span class="src">
               <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
@@ -921,8 +2213,18 @@
         <div class="rtp">
           <div class="rtp-eyebrow">Weekly Status Report &nbsp;·&nbsp; Adopt AI &times; Spendflo</div>
 
-<div class="rtp-week-of">Week 14 of 26</div>
-          <div class="rtp-period">Apr 14-18, 2026</div>
+          <!-- Week 14 SVG -->
+          <svg class="rtp-week-svg" width="80" height="80" viewBox="0 0 80 80">
+            <rect x="1" y="1" width="78" height="78" fill="none" stroke="#c0a070" stroke-width="1.5"/>
+            <rect x="1" y="1" width="20" height="20" fill="#0364ff"/>
+            <rect x="59" y="1" width="20" height="20" fill="#ff5203"/>
+            <rect x="1" y="59" width="20" height="20" fill="#f7d241"/>
+            <rect x="59" y="59" width="20" height="20" fill="#ffc0f5"/>
+            <text x="40" y="47" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1a0e08">14</text>
+          </svg>
+
+          <div class="rtp-week-of">Week 14 of 26</div>
+          <div class="rtp-period">Apr 14–18, 2026</div>
           <div class="rtp-status-row">
             <div class="status-stamp">
               <span class="pulse" style="width:12px;height:12px;display:inline-block;background:var(--O);flex-shrink:0;"></span>
@@ -954,7 +2256,7 @@
         </div><!-- /rtp -->
 
         <!-- TL;DR -->
-        <div class="tldr" id="rv-tldr">
+        <div class="tldr">
           <span class="tldr-label">TL;DR</span>
           <p>Month 4 CRUD milestone on track to complete. Contract record creation is in staging — production sign-off expected Monday April 21. Eval pass rate recovered to 93.2%, above the &ge;93% target. Yash confirmed contract creation is his top priority; live demo scheduled Apr 22.</p>
         </div>
@@ -973,7 +2275,7 @@
         </svg>
 
         <!-- Plan vs Actual -->
-        <div class="subsec-hd">Plan vs. Actual &nbsp;&#8212;&nbsp; BRD Section 3, Month 4</div>
+        <div class="subsec-hd">Plan vs. Actual &nbsp;&mdash;&nbsp; BRD Section 3, Month 4</div>
         <div class="tbl">
           <table>
             <thead>
@@ -1034,7 +2336,7 @@
               <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
             </div>
             <div>
-              <div class="act-source">Jira &nbsp;·&nbsp; Apr 17</div>
+              <div class="act-source">ClickUp &nbsp;·&nbsp; Apr 17</div>
               <div class="act-text">Contract creation merged to staging — sign-off pending.</div>
             </div>
           </div>
@@ -1090,7 +2392,7 @@
 
         <!-- Next Week -->
         <div class="subsec-hd mt-20">Next Week's Commitments</div>
-        <div id="rv-next-week">
+        <div>
           <div class="nxt-item">
             <span class="nxt-num">1.</span>
             <span class="nxt-text">Production deploy contract record creation</span>
@@ -1134,20 +2436,21 @@
         </svg>
 
         <!-- Champion Draft -->
-        <div class="champ" id="rv-champion-note">
+        <div class="champ">
           <span class="champ-label">Draft for Yash Kothari &nbsp;·&nbsp; Head of Product &nbsp;·&nbsp; Spendflo</span>
           <div class="champ-body">
             Hi Yash — contract creation is in staging and hits production Monday. Eval rate is back above 93%. Demo is confirmed for Tuesday the 22nd. Talk then.
           </div>
           <div class="champ-actions">
-            <button class="btn btn-dark">&#9993; Send to champion</button>
+            <button class="btn">&#9998; Edit Draft</button>
+            <button class="btn btn-dark">&#9993; Send to Champion</button>
           </div>
         </div>
 
         <!-- Master Prompt -->
         <button class="prompt-toggle" onclick="togglePrompt()">&#9662; Edit Report Prompt</button>
         <div class="prompt-panel" id="prompt-panel">
-          <textarea rows="6">You are generating a weekly status report for {{client_name}} from {{engagement_lead}}. Structure: TL;DR referencing BRD delivery plan, Plan vs. Actual table, Activity feed (Fireflies then Slack then Jira then Loom), Deliverables, Next week, Blockers, Champion message. Tone: direct, factual, confident. Champion: {{champion_name}}, {{champion_title}}.</textarea>
+          <textarea rows="6">You are generating a weekly status report for {{client_name}} from {{engagement_lead}}. Structure: TL;DR referencing BRD delivery plan, Plan vs. Actual table, Activity feed (Fireflies then Slack then ClickUp then Loom), Deliverables, Next week, Blockers, Champion message. Tone: direct, factual, confident. Champion: {{champion_name}}, {{champion_title}}.</textarea>
           <button class="btn btn-orange">Regenerate Report</button>
         </div>
 
@@ -1161,374 +2464,6 @@
 
 
 <!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 5: Integrations Tab                               -->
-<!-- ════════════════════════════════════════════════════════ -->
-<div id="view-integrations" class="view">
-<div class="page-wrap-project">
-
-  <!-- Project Header -->
-  <div class="breadcrumb">
-    <button class="breadcrumb-btn" onclick="goTo('view-admin')">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      All Engagements
-    </button>
-  </div>
-  <div class="proj-top">
-    <div class="proj-left">
-      <div class="proj-company">
-        Spendflo
-        <div class="proj-status-inline">
-          <svg width="12" height="12" viewBox="0 0 12 12" class="pulse"><rect width="12" height="12" fill="#ff5203"/></svg>
-          On Track
-        </div>
-        <span class="proj-period">Month 4 of 6 &nbsp;·&nbsp; Gate: Jul 5</span>
-      </div>
-      <div class="proj-subtitle">Conversational Procurement Co-pilot &nbsp;·&nbsp; 6-Month Pilot</div>
-    </div>
-  </div>
-  <div class="tabs-row">
-    <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
-    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
-    <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
-    <button class="tab-btn active" data-tab="integrations" onclick="goTo('view-integrations'); setActiveTab('integrations'); loadProjectIntegrations(currentEngagementId)">Integrations</button>
-    <button class="tab-btn" data-tab="inbox" onclick="goTo('view-inbox'); setActiveTab('inbox'); loadInbox(currentEngagementId)">Inbox</button>
-  </div>
-  <!-- /Project Header -->
-
-  <div class="mt-24">
-    <div class="int-section-label">Connected sources</div>
-    <div class="int-grid" id="int-grid-project">
-
-      <!-- Slack -->
-      <div class="int-card" id="int-card-slack">
-        <div class="int-card-top" style="border-color:var(--B)">
-          <div class="int-icon" style="background:var(--B)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
-          </div>
-          <div class="int-card-name">Slack</div>
-          <div class="int-status-badge" id="int-status-slack">Not configured</div>
-        </div>
-        <div class="int-card-body">
-          <label class="int-label">Channel name</label>
-          <input class="int-input" type="text" id="int-slack-channel" placeholder="#cs-spendflo">
-          <label class="int-label">Channel ID <span class="int-optional">(optional)</span></label>
-          <input class="int-input" type="text" id="int-slack-channel-id" placeholder="C0XXXXXXX">
-          <label class="int-label">Webhook URL <span class="int-optional">(optional)</span></label>
-          <input class="int-input" type="text" id="int-slack-webhook" placeholder="https://hooks.slack.com/services/...">
-        </div>
-        <div class="int-card-footer">
-          <button class="btn btn-orange" onclick="saveIntegration('slack')">Save</button>
-          <span class="int-note">Paste Slack exports into the Inbox to import messages</span>
-        </div>
-      </div>
-
-      <!-- Jira -->
-      <div class="int-card" id="int-card-jira">
-        <div class="int-card-top" style="border-color:var(--Y)">
-          <div class="int-icon" style="background:var(--Y)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          </div>
-          <div class="int-card-name">Jira</div>
-          <div class="int-status-badge" id="int-status-jira">Not configured</div>
-        </div>
-        <div class="int-card-body">
-          <label class="int-label">Project key</label>
-          <input class="int-input" type="text" id="int-jira-project-key" placeholder="SPEND">
-          <label class="int-label">Workspace URL</label>
-          <input class="int-input" type="text" id="int-jira-workspace" placeholder="https://yourorg.atlassian.net">
-        </div>
-        <div class="int-card-footer">
-          <button class="btn btn-orange" onclick="saveIntegration('jira')">Save</button>
-          <span class="int-note">Ticket updates appear in the Activity feed</span>
-        </div>
-      </div>
-
-      <!-- Loom -->
-      <div class="int-card" id="int-card-loom">
-        <div class="int-card-top" style="border-color:var(--P)">
-          <div class="int-icon" style="background:var(--P)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-          </div>
-          <div class="int-card-name">Loom</div>
-          <div class="int-status-badge" id="int-status-loom">Not configured</div>
-        </div>
-        <div class="int-card-body">
-          <label class="int-label">Workspace name</label>
-          <input class="int-input" type="text" id="int-loom-workspace" placeholder="spendflo-cs">
-          <label class="int-label">Shared folder tag <span class="int-optional">(optional)</span></label>
-          <input class="int-input" type="text" id="int-loom-folder" placeholder="customer-success">
-        </div>
-        <div class="int-card-footer">
-          <button class="btn btn-orange" onclick="saveIntegration('loom')">Save</button>
-          <span class="int-note">Video recordings link to activity items</span>
-        </div>
-      </div>
-
-      <!-- Fireflies -->
-      <div class="int-card" id="int-card-fireflies">
-        <div class="int-card-top" style="border-color:var(--O)">
-          <div class="int-icon" style="background:var(--O)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9 9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9z"/><path d="M12 8v4l3 3"/></svg>
-          </div>
-          <div class="int-card-name">Fireflies</div>
-          <div class="int-status-badge" id="int-status-fireflies">Not configured</div>
-        </div>
-        <div class="int-card-body">
-          <label class="int-label">Meeting filter keywords</label>
-          <input class="int-input" type="text" id="int-fireflies-keywords" placeholder="spendflo, procurement, pilot">
-          <label class="int-label">Participant email filter <span class="int-optional">(optional)</span></label>
-          <input class="int-input" type="text" id="int-fireflies-email" placeholder="@spendflo.com">
-        </div>
-        <div class="int-card-footer">
-          <button class="btn btn-orange" onclick="saveIntegration('fireflies')">Save</button>
-          <span class="int-note">Meeting transcripts feed into the Activity tab</span>
-        </div>
-      </div>
-
-    </div><!-- /int-grid-project -->
-  </div>
-
-</div><!-- /page-wrap-project -->
-</div><!-- /view-integrations -->
-
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 6: Inbox Tab                                      -->
-<!-- ════════════════════════════════════════════════════════ -->
-<div id="view-inbox" class="view">
-<div class="page-wrap-project">
-
-  <!-- Project Header -->
-  <div class="breadcrumb">
-    <button class="breadcrumb-btn" onclick="goTo('view-admin')">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#7a6050" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      All Engagements
-    </button>
-  </div>
-  <div class="proj-top">
-    <div class="proj-left">
-      <div class="proj-company">
-        Spendflo
-        <div class="proj-status-inline">
-          <svg width="12" height="12" viewBox="0 0 12 12" class="pulse"><rect width="12" height="12" fill="#ff5203"/></svg>
-          On Track
-        </div>
-        <span class="proj-period">Month 4 of 6 &nbsp;·&nbsp; Gate: Jul 5</span>
-      </div>
-      <div class="proj-subtitle">Conversational Procurement Co-pilot &nbsp;·&nbsp; 6-Month Pilot</div>
-    </div>
-  </div>
-  <div class="tabs-row">
-    <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
-    <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
-    <button class="tab-btn" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
-    <button class="tab-btn" data-tab="integrations" onclick="goTo('view-integrations'); setActiveTab('integrations'); loadProjectIntegrations(currentEngagementId)">Integrations</button>
-    <button class="tab-btn active" data-tab="inbox" onclick="goTo('view-inbox'); setActiveTab('inbox'); loadInbox(currentEngagementId)">Inbox</button>
-  </div>
-  <!-- /Project Header -->
-
-  <div class="mt-24">
-
-    <!-- Add to inbox form -->
-    <div class="inbox-add-panel">
-      <div class="inbox-add-header">Add to inbox</div>
-      <div class="inbox-add-row">
-        <select class="int-input" id="inbox-source" style="width:160px;flex-shrink:0">
-          <option value="document">Document</option>
-          <option value="slack">Slack export</option>
-          <option value="email">Email</option>
-          <option value="meeting_notes">Meeting notes</option>
-          <option value="other">Other</option>
-        </select>
-        <input class="int-input" type="text" id="inbox-title" placeholder="Title (optional)" style="flex:1">
-      </div>
-      <textarea class="inbox-body-ta" id="inbox-body" rows="5" placeholder="Paste content here — Slack exports, meeting notes, documents, emails, anything you want Claude to reference when generating reports..."></textarea>
-      <div class="inbox-add-actions">
-        <button class="btn btn-orange" onclick="addToInbox()">Add to inbox</button>
-        <span class="int-note">Claude will extract key activity items when you click "Extract to Activity"</span>
-      </div>
-    </div>
-
-    <!-- Inbox items list -->
-    <div id="inbox-list">
-      <div class="inbox-empty" id="inbox-empty">No items yet. Paste content above to get started.</div>
-    </div>
-
-  </div>
-
-</div><!-- /page-wrap-project -->
-</div><!-- /view-inbox -->
-
-
-<!-- ════════════════════════════════════════════════════════ -->
-<!--  VIEW 7: User Control / Settings                        -->
-<!-- ════════════════════════════════════════════════════════ -->
-<div id="view-user-control" class="view">
-<div class="page-wrap">
-
-  <div class="sec-hd-row">
-    <h1 class="page-h1">Settings</h1>
-    <button class="btn" onclick="goTo('view-admin')">Back to engagements</button>
-  </div>
-
-  <!-- Ornamental SVG divider -->
-  <svg class="orn-rule" height="18" viewBox="0 0 1020 18" preserveAspectRatio="xMidYMid meet">
-    <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
-    <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
-    <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
-    <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
-    <line x1="74" y1="9.5" x2="946" y2="9.5" stroke="#c0a070" stroke-width="1"/>
-    <rect x="950" y="3" width="13" height="13" fill="#ffc0f5"/>
-    <rect x="968" y="3" width="13" height="13" fill="#f7d241"/>
-    <rect x="986" y="3" width="13" height="13" fill="#0364ff"/>
-    <rect x="1004" y="3" width="13" height="13" fill="#ff5203"/>
-  </svg>
-
-  <!-- Master Prompt -->
-  <div class="uc-section">
-    <div class="uc-section-hd">Master Prompt</div>
-    <p class="page-sub" style="margin-bottom:14px;">Used as the base instruction when generating weekly reports.</p>
-    <textarea id="master-prompt-textarea" class="uc-textarea" rows="10" placeholder="Enter the master prompt used for report generation..."></textarea>
-    <div style="margin-top:12px;">
-      <button class="btn btn-orange" id="save-settings-btn">Save prompt</button>
-    </div>
-  </div>
-
-  <!-- Integrations -->
-  <div class="uc-section">
-    <div class="uc-section-hd">Integrations</div>
-    <p class="page-sub" style="margin-bottom:14px;">Connected data sources for activity ingestion.</p>
-    <div class="uc-integrations" id="integrations-grid">
-      <!-- Populated by loadIntegrations() -->
-      <div class="uc-int-card">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ff5203"/></svg>
-          <span style="font-size:15px;font-weight:600;color:var(--ink);">Fireflies</span>
-        </div>
-        <div class="uc-int-badge">Connected</div>
-        <div class="uc-int-since">Since Jan 5, 2026</div>
-      </div>
-      <div class="uc-int-card">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f7d241"/></svg>
-          <span style="font-size:15px;font-weight:600;color:var(--ink);">Jira</span>
-        </div>
-        <div class="uc-int-badge">Connected</div>
-        <div class="uc-int-since">Since Jan 5, 2026</div>
-      </div>
-      <div class="uc-int-card">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0364ff"/></svg>
-          <span style="font-size:15px;font-weight:600;color:var(--ink);">Slack</span>
-        </div>
-        <div class="uc-int-badge">Connected</div>
-        <div class="uc-int-since">Since Jan 5, 2026</div>
-      </div>
-      <div class="uc-int-card">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffc0f5"/></svg>
-          <span style="font-size:15px;font-weight:600;color:var(--ink);">Loom</span>
-        </div>
-        <div class="uc-int-badge">Connected</div>
-        <div class="uc-int-since">Since Jan 5, 2026</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Team Members -->
-  <div class="uc-section">
-    <div class="uc-section-hd">Team Members</div>
-    <p class="page-sub" style="margin-bottom:14px;">Manage who has access to the Lab0 platform.</p>
-    <div class="tbl">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody id="team-members-tbody">
-          <!-- Populated by loadTeamMembers() -->
-          <tr>
-            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--O);">AS</div>Anirudh S.</div></td>
-            <td>anirudh@adopt.ai</td>
-            <td>admin</td>
-          </tr>
-          <tr>
-            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--B);">RM</div>Rahul M.</div></td>
-            <td>rahul.m@adopt.ai</td>
-            <td>editor</td>
-          </tr>
-          <tr>
-            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--Y);color:var(--ink);">PK</div>Priya K.</div></td>
-            <td>priya.k@adopt.ai</td>
-            <td>editor</td>
-          </tr>
-          <tr>
-            <td><div style="display:flex;align-items:center;gap:10px;"><div class="team-badge" style="background:var(--P);color:var(--ink);">KP</div>Krishna P.</div></td>
-            <td>krishna.p@adopt.ai</td>
-            <td>viewer</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="margin-top:20px;">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
-        <label for="new-member-name" style="flex:1;min-width:120px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);">Name</label>
-        <label for="new-member-email" style="flex:2;min-width:180px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);">Email</label>
-        <label for="new-member-role" style="flex:1;min-width:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);">Role</label>
-        <div style="min-width:100px;flex:0 0 auto;"></div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <input id="new-member-name" type="text" style="flex:1;min-width:120px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
-        <input id="new-member-email" type="email" style="flex:2;min-width:180px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
-        <input id="new-member-role" type="text" style="flex:1;min-width:100px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;">
-        <button class="btn" id="add-member-btn">Add member</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Engagement Defaults -->
-  <div class="uc-section">
-    <div class="uc-section-hd">Engagement Defaults</div>
-    <p class="page-sub" style="margin-bottom:14px;">Default settings applied to new engagements.</p>
-    <div class="uc-defaults-grid">
-      <div class="uc-default-row">
-        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Report Template</label>
-        <select id="default-template" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
-          <option value="standard">Standard</option>
-          <option value="executive">Executive</option>
-          <option value="technical">Technical</option>
-        </select>
-      </div>
-      <div class="uc-default-row">
-        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Delivery Method</label>
-        <select id="default-delivery" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
-          <option value="email">Email</option>
-          <option value="slack">Slack</option>
-          <option value="manual">Manual</option>
-        </select>
-      </div>
-      <div class="uc-default-row">
-        <label style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;">Cadence</label>
-        <select id="default-cadence" style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:7px 10px;width:100%;">
-          <option value="weekly">Weekly</option>
-          <option value="biweekly">Bi-weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-    </div>
-    <div style="margin-top:16px;">
-      <button class="btn btn-orange" id="save-defaults-btn">Save defaults</button>
-    </div>
-  </div>
-
-</div><!-- /page-wrap -->
-</div><!-- /view-user-control -->
-
-
-<!-- ════════════════════════════════════════════════════════ -->
 <!--  MODAL: Permissions                                      -->
 <!-- ════════════════════════════════════════════════════════ -->
 <div id="modal-permissions" class="modal-overlay" onclick="if(event.target===this)hideModal('modal-permissions')">
@@ -1539,6 +2474,7 @@
     </div>
     <div class="modal-body">
 
+      <!-- Two column: Editors + Viewers -->
       <div class="modal-cols">
 
         <!-- Editors -->
@@ -1600,15 +2536,67 @@
 </div><!-- /modal-permissions -->
 
 
-<!-- Toast notification -->
-<div id="toast" class="toast"></div>
+<!-- ════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<script>
+function goTo(viewId) {
+  document.querySelectorAll('.view').forEach(function(v) {
+    v.style.display = 'none';
+  });
+  document.getElementById(viewId).style.display = 'block';
+  window.scrollTo(0, 0);
+}
 
-<!-- Supabase credentials (gitignored, not in repo) -->
-<script src="config.js"></script>
-<!-- Supabase JS v2 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- App JS -->
-<script src="app.js"></script>
+function setActiveTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+}
+
+function showModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+
+function hideModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function toggleComm(cb) {
+  var item = cb.closest('.comm-item');
+  item.classList.toggle('excluded');
+  cb.classList.toggle('checked');
+  updateCommCounter();
+}
+
+function updateCommCounter() {
+  var total = document.querySelectorAll('#view-comms .comm-item').length;
+  var excluded = document.querySelectorAll('#view-comms .comm-item.excluded').length;
+  var selected = total - excluded;
+  var el = document.getElementById('comm-counter');
+  if (el) el.textContent = total + ' items  \u00b7  ' + selected + ' selected  \u00b7  ' + excluded + ' excluded';
+}
+
+function togglePrompt() {
+  var panel = document.getElementById('prompt-panel');
+  panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  goTo('view-admin');
+  updateCommCounter();
+
+  // Filter chip toggle behavior (visual only)
+  document.querySelectorAll('#view-comms .chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('#view-comms .chip').forEach(function(c) {
+        c.classList.remove('active');
+      });
+      chip.classList.add('active');
+    });
+  });
+});
+</script>
 
 </body>
 </html>

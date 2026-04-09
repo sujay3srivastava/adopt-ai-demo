@@ -7,6 +7,7 @@ const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
 let currentEngagementId = null;
 let currentReportId = null;
+let currentVersionNum = null;
 let reportEditMode = false;
 let brdOriginalHtml = {};
 
@@ -640,9 +641,12 @@ async function loadActivities(engId) {
 //  REPORTS
 // ============================================================
 
-async function loadReports(engId) {
+async function loadReports(engId, skipAutoLoad) {
   try {
-    var res = await sb.from('report_versions').select('*').eq('engagement_id', engId).order('version_num', { ascending: false });
+    var res = await sb.from('report_versions').select('*')
+      .eq('engagement_id', engId)
+      .order('version_num', { ascending: false })
+      .order('revision', { ascending: false });
     if (res.error) throw res.error;
     var reports = res.data || [];
 
@@ -653,7 +657,7 @@ async function loadReports(engId) {
       history.innerHTML = headerHtml + renderReportHistory(reports);
     }
 
-    if (reports.length > 0) {
+    if (!skipAutoLoad && reports.length > 0) {
       await loadReportVersion(reports[0].id);
     }
   } catch (err) {
@@ -663,15 +667,44 @@ async function loadReports(engId) {
 }
 
 function renderReportHistory(reports) {
-  return reports.map(function(r) {
-    var isDraft = r.status === 'draft';
-    var chipClass = isDraft ? 'rh-chip draft' : 'rh-chip';
-    var chipText = isDraft ? 'Draft' : 'Sent';
+  // Group by version_num (week), preserving order (already sorted DESC)
+  var groups = [];
+  var groupMap = {};
+  reports.forEach(function(r) {
+    var vn = r.version_num;
+    if (!groupMap[vn]) {
+      groupMap[vn] = [];
+      groups.push(vn);
+    }
+    groupMap[vn].push(r);
+  });
+
+  return groups.map(function(vn) {
+    var revisions = groupMap[vn];
+    var weekLabel = revisions[0].week_label || ('Week ' + vn);
+
+    var revHtml = revisions.map(function(r) {
+      var isDraft = r.status === 'draft';
+      var chipClass = isDraft ? 'rh-chip draft' : 'rh-chip';
+      var chipText = isDraft ? 'Draft' : 'Sent';
+      var rev = r.revision || 1;
+      var note = r.revision_note ? escHtml(r.revision_note.slice(0, 52)) : '';
+
+      return [
+        '<div class="rh-item" onclick="loadReportVersion(\'' + r.id + '\')">',
+        '  <div class="rh-item-main">',
+        '    <div class="rh-rev">v' + rev + '</div>',
+        note ? '    <div class="rh-rev-note">' + note + '</div>' : '',
+        '  </div>',
+        '  <div class="' + chipClass + '">' + chipText + '</div>',
+        '</div>'
+      ].filter(Boolean).join('\n');
+    }).join('\n');
+
     return [
-      '<div class="rh-item" onclick="loadReportVersion(\'' + r.id + '\')">',
-      '  <div class="rh-week">' + escHtml(r.week_label || ('Version ' + r.version_num)) + '</div>',
-      '  <div class="rh-period">' + escHtml(r.period_label || '') + '</div>',
-      '  <div class="' + chipClass + '">' + chipText + '</div>',
+      '<div class="rh-week-group">',
+      '  <div class="rh-week-label">' + escHtml(weekLabel) + ' <span class="rh-rev-count">' + revisions.length + ' rev' + (revisions.length !== 1 ? 's' : '') + '</span></div>',
+      revHtml,
       '</div>'
     ].join('\n');
   }).join('\n');
@@ -685,6 +718,7 @@ async function loadReportVersion(reportId) {
     if (res.error) throw res.error;
     var report = res.data;
     currentReportId = reportId;
+    currentVersionNum = report.version_num;
 
     // Mark active in history
     document.querySelectorAll('.rh-item').forEach(function(item) {
@@ -725,9 +759,11 @@ async function loadReportVersion(reportId) {
 }
 
 function buildReportBody(report, content) {
-  var weekNum = report.version_num || '';
-  var periodLabel = report.period_label || '';
-  var weekLabel = report.week_label || ('Week ' + weekNum);
+  // Helper: colored status badge
+  function statusBadge(status) {
+    var cls = (status || '').toLowerCase().replace(/\s+/g, '-');
+    return '<span class="status-badge ' + escHtml(cls) + '">' + escHtml(status || '') + '</span>';
+  }
 
   // TL;DR
   var tldrHtml = [
@@ -742,56 +778,52 @@ function buildReportBody(report, content) {
     return [
       '<tr>',
       '  <td>' + escHtml(row.committed || '') + '</td>',
-      '  <td>' + escHtml(row.status || '') + '</td>',
-      '  <td><span style="color:var(--O);font-style:italic;">' + escHtml(row.delta || '') + '</span></td>',
+      '  <td>' + statusBadge(row.status || '') + '</td>',
+      '  <td class="pva-delta">' + escHtml(row.delta || '') + '</td>',
       '</tr>'
     ].join('\n');
   }).join('\n');
 
-  var planVsActual = [
+  var planVsActual = planRows ? [
     '<div class="subsec-hd">Plan vs. Actual</div>',
     '<div class="tbl"><table>',
-    '  <thead><tr><th>Committed Scope</th><th>Status</th><th>Delta</th></tr></thead>',
+    '  <thead><tr><th>Committed</th><th>Status</th><th>Notes</th></tr></thead>',
     '  <tbody>' + planRows + '</tbody>',
     '</table></div>'
-  ].join('\n');
+  ].join('\n') : '';
 
-  // Activities
-  var sourceColors = {
-    'fireflies': '#ff5203',
-    'slack': '#0364ff',
-    'jira': '#f7d241',
-    'loom': '#ffc0f5'
-  };
+  // Activity items — colored left border by source, source pill badge
+  var sourceBorderColors = { fireflies: '#ff5203', slack: '#0364ff', jira: '#ddb800', loom: '#c060b0' };
 
   var activitiesHtml = (content.activities || []).map(function(act) {
-    var color = act.source_color || sourceColors[act.source] || '#a89080';
+    var src = (act.source || '').toLowerCase();
+    var borderColor = sourceBorderColors[src] || '#c0a070';
     var sourceLabel = act.source ? (act.source.charAt(0).toUpperCase() + act.source.slice(1)) : '';
-    var loomHtml = act.loom_link ? ' <span class="loom-link" onclick="window.open(\'' + escHtml(act.loom_link) + '\',\'_blank\')">Watch</span>' : '';
+    var loomHtml = act.loom_link ? ' <a class="loom-link" href="' + escHtml(act.loom_link) + '" target="_blank">Watch</a>' : '';
     return [
-      '<div class="act-item">',
-      '  <div class="act-icon"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="' + escHtml(color) + '"/></svg></div>',
-      '  <div>',
-      '    <div class="act-source">' + escHtml(sourceLabel) + (act.date ? '  \u00b7  ' + escHtml(act.date) : '') + '</div>',
-      '    <div class="act-text">' + escHtml(act.text || '') + loomHtml + '</div>',
+      '<div class="act-item" style="border-left-color:' + borderColor + '">',
+      '  <div class="act-source-row">',
+      '    <span class="source-pill ' + escHtml(src) + '">' + escHtml(sourceLabel) + '</span>',
+      act.date ? '    <span class="act-date">' + escHtml(act.date) + '</span>' : '',
       '  </div>',
+      '  <div class="act-text">' + escHtml(act.text || '') + loomHtml + '</div>',
       '</div>'
-    ].join('\n');
+    ].filter(Boolean).join('\n');
   }).join('\n');
 
   var activitiesSection = activitiesHtml
-    ? '<div class="subsec-hd mt-20">This Week\'s Activity</div><div>' + activitiesHtml + '</div>'
+    ? '<div class="subsec-hd mt-20">This Week\'s Activity</div><div class="act-list">' + activitiesHtml + '</div>'
     : '';
 
-  // Deliverables
+  // Key Deliverables
   var delivRows = (content.deliverables || []).map(function(d) {
     return [
       '<tr>',
       '  <td>' + escHtml(d.deliverable || '') + '</td>',
-      '  <td>' + escHtml(d.type || '') + '</td>',
-      '  <td>' + escHtml(d.status || '') + '</td>',
+      '  <td><span class="type-chip">' + escHtml(d.type || '') + '</span></td>',
+      '  <td>' + statusBadge(d.status || '') + '</td>',
       '  <td>' + escHtml(d.owner || '') + '</td>',
-      '  <td style="color:var(--ink4);font-size:12px;">' + escHtml(d.ticket || '') + '</td>',
+      '  <td class="ticket-cell">' + escHtml(d.ticket || '') + '</td>',
       '</tr>'
     ].join('\n');
   }).join('\n');
@@ -806,29 +838,35 @@ function buildReportBody(report, content) {
       ].join('\n')
     : '';
 
-  // Next week
+  // Next Week Commitments — numbered, with owner pill + date
   var nextItems = (content.next_week || []).map(function(item, i) {
     return [
       '<div class="nxt-item">',
-      '  <span class="nxt-num">' + (i + 1) + '.</span>',
-      '  <span class="nxt-text">' + escHtml(item.text || '') + '</span>',
-      '  <span class="nxt-owner">' + escHtml(item.owner || '') + (item.date ? '  \u00b7  ' + escHtml(item.date) : '') + '</span>',
+      '  <span class="nxt-num">' + (i + 1) + '</span>',
+      '  <div class="nxt-content">',
+      '    <div class="nxt-text">' + escHtml(item.text || '') + '</div>',
+      '    <div class="nxt-meta">',
+      '      <span class="owner-pill">' + escHtml(item.owner || '') + '</span>',
+      item.date ? '      <span class="nxt-date">' + escHtml(item.date) + '</span>' : '',
+      '    </div>',
+      '  </div>',
       '</div>'
-    ].join('\n');
+    ].filter(Boolean).join('\n');
   }).join('\n');
 
-  var nextWeekSection = nextItems
-    ? '<div class="subsec-hd mt-20">Next Week\'s Commitments</div><div id="rv-next-week">' + nextItems + '</div>'
-    : '<div class="subsec-hd mt-20">Next Week\'s Commitments</div><div id="rv-next-week"></div>';
+  var nextWeekSection = [
+    '<div class="subsec-hd mt-20">Next Week\'s Commitments</div>',
+    '<div id="rv-next-week">' + (nextItems || '<p style="font-size:14px;color:var(--ink4);padding:12px 0;">No commitments logged.</p>') + '</div>'
+  ].join('\n');
 
   // Blockers
   var blockersHtml = '';
   if (content.blockers && content.blockers.length > 0) {
     blockersHtml = content.blockers.map(function(b) {
-      return '<div class="nxt-item"><span class="nxt-text">' + escHtml(b) + '</span></div>';
+      return '<div class="blocker-item">' + escHtml(b) + '</div>';
     }).join('\n');
   } else {
-    blockersHtml = '<div class="no-blocker"><svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>No active blockers.</div>';
+    blockersHtml = '<div class="no-blocker">No active blockers.</div>';
   }
   var blockersSection = '<div class="subsec-hd mt-20">Blockers</div>' + blockersHtml;
 
@@ -842,7 +880,7 @@ function buildReportBody(report, content) {
     '</div>'
   ].join('\n');
 
-  // Ornamental rule SVG (inline, compact)
+  // Ornamental rule SVG
   var ornRule = '<svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet"><rect x="0" y="3" width="13" height="13" fill="#ff5203"/><rect x="18" y="3" width="13" height="13" fill="#0364ff"/><rect x="36" y="3" width="13" height="13" fill="#f7d241"/><rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/><line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/><rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/><rect x="608" y="3" width="13" height="13" fill="#f7d241"/><rect x="626" y="3" width="13" height="13" fill="#0364ff"/><rect x="644" y="3" width="13" height="13" fill="#ff5203"/></svg>';
 
   return [
@@ -911,22 +949,43 @@ async function saveReportEdit() {
     var tldrVal = tldrTa ? tldrTa.value : '';
     var champVal = champTa ? champTa.value : '';
 
-    // Fetch existing content
-    var res = await sb.from('report_versions').select('content').eq('id', currentReportId).single();
+    // Fetch full current row
+    var res = await sb.from('report_versions').select('*').eq('id', currentReportId).single();
     if (res.error) throw res.error;
+    var current = res.data;
 
-    var content = res.data.content || {};
+    var content = Object.assign({}, current.content || {});
     content.tldr = tldrVal;
     content.champion_note = champVal;
 
-    var upd = await sb.from('report_versions').update({ content: content }).eq('id', currentReportId);
-    if (upd.error) throw upd.error;
+    // Get next revision number for this week
+    var rRes = await sb.from('report_versions')
+      .select('revision')
+      .eq('engagement_id', current.engagement_id)
+      .eq('version_num', current.version_num)
+      .order('revision', { ascending: false })
+      .limit(1);
+    var nextRev = ((rRes.data && rRes.data.length > 0) ? (rRes.data[0].revision || 1) : 1) + 1;
+
+    // Insert as new revision
+    var ins = await sb.from('report_versions').insert({
+      engagement_id: current.engagement_id,
+      version_num: current.version_num,
+      week_label: current.week_label,
+      period_label: current.period_label,
+      content: content,
+      status: current.status,
+      revision: nextRev,
+      revision_note: 'Manual edit'
+    }).select().single();
+    if (ins.error) throw ins.error;
 
     exitReportEdit();
-    showToast('Report saved');
+    showToast('Saved as v' + nextRev);
 
-    // Re-render
-    await loadReportVersion(currentReportId);
+    currentReportId = ins.data.id;
+    await loadReports(current.engagement_id, true);
+    await loadReportVersion(ins.data.id);
 
   } catch (err) {
     console.error('saveReportEdit error:', err);
@@ -972,6 +1031,411 @@ function exitReportEdit() {
 
 function exportReport() {
   window.print();
+}
+
+// ============================================================
+//  AI REPORT GENERATION + EDITING
+// ============================================================
+
+async function generateReport() {
+  if (!currentEngagementId) { showToast('No engagement open'); return; }
+
+  // Collect selected activity items from DOM
+  var selectedItems = document.querySelectorAll('#comm-feed .comm-item:not(.excluded)');
+  var activities = Array.from(selectedItems).map(function(el) {
+    var sourceEl = el.querySelector('.comm-source');
+    var headlineEl = el.querySelector('.comm-headline');
+    var textEl = el.querySelector('.comm-text');
+    // source label includes meta_text after bullet, strip it for a clean label
+    var sourceRaw = sourceEl ? sourceEl.textContent : '';
+    var source = sourceRaw.split('\u00b7')[0].trim().toLowerCase();
+    return {
+      source: source,
+      headline: headlineEl ? headlineEl.textContent.trim() : '',
+      body_text: textEl ? textEl.textContent.trim() : ''
+    };
+  });
+
+  try {
+    // Fetch engagement
+    var engRes = await sb.from('engagements').select('*').eq('id', currentEngagementId).single();
+    if (engRes.error) throw engRes.error;
+    var engagement = engRes.data;
+
+    // Fetch BRD sections (exclude overview for report context)
+    var brdRes = await sb.from('brd_content').select('*').eq('engagement_id', currentEngagementId);
+    if (brdRes.error) throw brdRes.error;
+    var brd = {};
+    (brdRes.data || []).forEach(function(row) { brd[row.section_key] = row.content; });
+
+    // Get next version number
+    var vRes = await sb.from('report_versions')
+      .select('version_num')
+      .eq('engagement_id', currentEngagementId)
+      .order('version_num', { ascending: false })
+      .limit(1);
+    var lastVersion = (vRes.data && vRes.data.length > 0) ? vRes.data[0].version_num : 0;
+    var nextVersion = lastVersion + 1;
+
+    var now = new Date();
+    var weekLabel = 'Week ' + nextVersion;
+    var periodLabel = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + now.getFullYear();
+
+    // Fetch last 2 sent weeks as context for Claude
+    var priorRes = await sb.from('report_versions')
+      .select('version_num, week_label, content, revision')
+      .eq('engagement_id', currentEngagementId)
+      .eq('status', 'sent')
+      .order('version_num', { ascending: false })
+      .order('revision', { ascending: false });
+    var seenWeeks = {};
+    var priorReports = [];
+    (priorRes.data || []).forEach(function(r) {
+      if (!seenWeeks[r.version_num] && priorReports.length < 2) {
+        seenWeeks[r.version_num] = true;
+        priorReports.push({ week: r.week_label || ('Week ' + r.version_num), tldr: (r.content || {}).tldr || '' });
+      }
+    });
+
+    showToast('Generating with Claude...');
+
+    var resp = await fetch('http://localhost:3001/api/generate-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ engagement: engagement, brd: brd, activities: activities, weekLabel: weekLabel, periodLabel: periodLabel, priorReports: priorReports })
+    });
+    if (!resp.ok) throw new Error('Server returned ' + resp.status);
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    // Save as new draft report version (revision 1 — fresh week)
+    var ins = await sb.from('report_versions').insert({
+      engagement_id: currentEngagementId,
+      version_num: nextVersion,
+      week_label: weekLabel,
+      period_label: periodLabel,
+      content: data.content,
+      status: 'draft',
+      revision: 1,
+      revision_note: 'Generated by Claude'
+    });
+    if (ins.error) throw ins.error;
+
+    showToast('Report generated');
+
+    // Navigate to reports and load new version
+    goTo('view-reports');
+    setActiveTab('reports');
+    await loadReports(currentEngagementId);
+
+  } catch (err) {
+    console.error('generateReport error:', err);
+    showToast('Generation failed: ' + err.message);
+  }
+}
+
+async function editWithAI() {
+  if (!currentReportId) { showToast('No report loaded'); return; }
+
+  var promptEl = document.getElementById('rv-ai-prompt');
+  if (!promptEl || !promptEl.value.trim()) { showToast('Enter a prompt first'); return; }
+  var userPrompt = promptEl.value.trim();
+
+  try {
+    // Fetch current row
+    var res = await sb.from('report_versions').select('*').eq('id', currentReportId).single();
+    if (res.error) throw res.error;
+    var current = res.data;
+
+    // Fetch all revisions of this week for context (most recent first)
+    var histRes = await sb.from('report_versions')
+      .select('revision, revision_note, content')
+      .eq('engagement_id', current.engagement_id)
+      .eq('version_num', current.version_num)
+      .order('revision', { ascending: false });
+    var revisionHistory = (histRes.data || []).map(function(r) {
+      return {
+        revision: r.revision || 1,
+        note: r.revision_note || '',
+        tldr: (r.content || {}).tldr || ''
+      };
+    });
+
+    var nextRev = (revisionHistory.length > 0 ? (revisionHistory[0].revision || 1) : 1) + 1;
+
+    showToast('Editing with Claude...');
+
+    var resp = await fetch('http://localhost:3001/api/edit-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: current.content, prompt: userPrompt, revisionHistory: revisionHistory })
+    });
+    if (!resp.ok) throw new Error('Server returned ' + resp.status);
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    // Insert as new revision
+    var ins = await sb.from('report_versions').insert({
+      engagement_id: current.engagement_id,
+      version_num: current.version_num,
+      week_label: current.week_label,
+      period_label: current.period_label,
+      content: data.content,
+      status: 'draft',
+      revision: nextRev,
+      revision_note: userPrompt.slice(0, 80)
+    }).select().single();
+    if (ins.error) throw ins.error;
+
+    showToast('Saved as v' + nextRev);
+    closeAiBar();
+    currentReportId = ins.data.id;
+    await loadReports(current.engagement_id, true);
+    await loadReportVersion(ins.data.id);
+
+  } catch (err) {
+    console.error('editWithAI error:', err);
+    showToast('Edit failed: ' + err.message);
+  }
+}
+
+function openAiBar() {
+  var bar = document.getElementById('rv-ai-bar');
+  if (bar) { bar.style.display = 'flex'; }
+  var ta = document.getElementById('rv-ai-prompt');
+  if (ta) { ta.value = ''; ta.focus(); }
+}
+
+function closeAiBar() {
+  var bar = document.getElementById('rv-ai-bar');
+  if (bar) { bar.style.display = 'none'; }
+}
+
+// ============================================================
+//  INTEGRATIONS
+// ============================================================
+
+var INT_FIELDS = {
+  slack:      ['channel', 'channel-id', 'webhook'],
+  jira:       ['project-key', 'workspace'],
+  loom:       ['workspace', 'folder'],
+  fireflies:  ['keywords', 'email']
+};
+
+async function loadProjectIntegrations(engId) {
+  if (!engId) return;
+  try {
+    var res = await sb.from('project_integrations').select('*').eq('engagement_id', engId);
+    if (res.error) throw res.error;
+
+    // Clear all status badges to "Not configured"
+    ['slack', 'jira', 'loom', 'fireflies'].forEach(function(svc) {
+      var badge = document.getElementById('int-status-' + svc);
+      if (badge) { badge.textContent = 'Not configured'; badge.classList.remove('configured'); }
+    });
+
+    (res.data || []).forEach(function(row) {
+      var svc = row.service;
+      var cfg = row.config || {};
+
+      // Populate fields
+      var fields = INT_FIELDS[svc] || [];
+      fields.forEach(function(field) {
+        var el = document.getElementById('int-' + svc + '-' + field);
+        if (el && cfg[field]) el.value = cfg[field];
+      });
+
+      // Update status badge
+      var badge = document.getElementById('int-status-' + svc);
+      if (badge) { badge.textContent = 'Configured'; badge.classList.add('configured'); }
+    });
+  } catch (err) {
+    console.error('loadProjectIntegrations error:', err);
+  }
+}
+
+async function saveIntegration(service) {
+  if (!currentEngagementId) { showToast('No engagement open'); return; }
+
+  var fields = INT_FIELDS[service] || [];
+  var config = {};
+  fields.forEach(function(field) {
+    var el = document.getElementById('int-' + service + '-' + field);
+    if (el && el.value.trim()) config[field] = el.value.trim();
+  });
+
+  try {
+    var res = await sb.from('project_integrations').upsert({
+      engagement_id: currentEngagementId,
+      service: service,
+      config: config,
+      status: 'configured'
+    }, { onConflict: 'engagement_id,service' });
+    if (res.error) throw res.error;
+
+    var badge = document.getElementById('int-status-' + service);
+    if (badge) { badge.textContent = 'Configured'; badge.classList.add('configured'); }
+    showToast(service.charAt(0).toUpperCase() + service.slice(1) + ' saved');
+  } catch (err) {
+    console.error('saveIntegration error:', err);
+    showToast('Failed to save integration');
+  }
+}
+
+// ============================================================
+//  INBOX
+// ============================================================
+
+var SOURCE_COLORS = { slack: 'var(--B)', jira: 'var(--Y)', loom: 'var(--P)', fireflies: 'var(--O)', document: 'var(--ink3)', email: 'var(--ink3)', meeting_notes: 'var(--O)', other: 'var(--ink4)' };
+
+async function loadInbox(engId) {
+  if (!engId) return;
+  try {
+    var res = await sb.from('inbox_items').select('*').eq('engagement_id', engId).order('created_at', { ascending: false });
+    if (res.error) throw res.error;
+    renderInboxList(res.data || []);
+  } catch (err) {
+    console.error('loadInbox error:', err);
+    showToast('Failed to load inbox');
+  }
+}
+
+function renderInboxList(items) {
+  var list = document.getElementById('inbox-list');
+  var empty = document.getElementById('inbox-empty');
+  if (!list) return;
+
+  if (items.length === 0) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  var html = items.map(function(item) {
+    var color = SOURCE_COLORS[item.source_label] || 'var(--ink3)';
+    var sourceLabel = (item.source_label || 'document').replace('_', ' ');
+    var excerpt = (item.body || '').slice(0, 140).trim();
+    if (item.body && item.body.length > 140) excerpt += '...';
+    var date = item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+    return [
+      '<div class="inbox-item" id="inbox-item-' + item.id + '">',
+      '  <div class="inbox-item-header">',
+      '    <span class="inbox-source-badge" style="background:' + color + '">' + escHtml(sourceLabel) + '</span>',
+      '    <span class="inbox-item-title">' + escHtml(item.title || 'Untitled') + '</span>',
+      '    <span class="inbox-item-date">' + date + '</span>',
+      '  </div>',
+      '  <div class="inbox-excerpt">' + escHtml(excerpt) + '</div>',
+      '  <div class="inbox-item-actions">',
+      '    <button class="btn btn-orange inbox-extract-btn" onclick="extractToActivity(\'' + item.id + '\')">Extract to Activity</button>',
+      '    <button class="btn inbox-delete-btn" onclick="deleteInboxItem(\'' + item.id + '\')">Remove</button>',
+      '  </div>',
+      '</div>'
+    ].join('\n');
+  }).join('\n');
+
+  list.innerHTML = (document.getElementById('inbox-empty') ? '' : '') + html;
+}
+
+async function addToInbox() {
+  if (!currentEngagementId) { showToast('No engagement open'); return; }
+
+  var source = document.getElementById('inbox-source');
+  var titleEl = document.getElementById('inbox-title');
+  var bodyEl = document.getElementById('inbox-body');
+
+  var body = bodyEl ? bodyEl.value.trim() : '';
+  if (!body) { showToast('Paste some content first'); return; }
+
+  try {
+    var res = await sb.from('inbox_items').insert({
+      engagement_id: currentEngagementId,
+      title: titleEl ? titleEl.value.trim() : '',
+      body: body,
+      source_label: source ? source.value : 'document'
+    });
+    if (res.error) throw res.error;
+
+    // Clear form
+    if (bodyEl) bodyEl.value = '';
+    if (titleEl) titleEl.value = '';
+
+    showToast('Added to inbox');
+    await loadInbox(currentEngagementId);
+  } catch (err) {
+    console.error('addToInbox error:', err);
+    showToast('Failed to add item');
+  }
+}
+
+async function extractToActivity(itemId) {
+  try {
+    var itemRes = await sb.from('inbox_items').select('*').eq('id', itemId).single();
+    if (itemRes.error) throw itemRes.error;
+    var item = itemRes.data;
+
+    var engRes = await sb.from('engagements').select('name').eq('id', currentEngagementId).single();
+    var engName = engRes.data ? engRes.data.name : '';
+
+    var btn = document.querySelector('#inbox-item-' + itemId + ' .inbox-extract-btn');
+    if (btn) { btn.textContent = 'Extracting...'; btn.disabled = true; }
+
+    var resp = await fetch('http://localhost:3001/api/extract-activity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: item.title, body: item.body, source_label: item.source_label, engagementName: engName })
+    });
+    if (!resp.ok) throw new Error('Server returned ' + resp.status);
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    var items = data.items || [];
+    if (items.length === 0) { showToast('No activity items found'); return; }
+
+    // Insert extracted items into activities table
+    var rows = items.map(function(a) {
+      return {
+        engagement_id: currentEngagementId,
+        source: a.source || item.source_label || 'document',
+        headline: a.headline || '',
+        body_text: a.body_text || '',
+        meta_text: a.meta_text || '',
+        selected: true,
+        activity_ts: new Date().toISOString()
+      };
+    });
+
+    var ins = await sb.from('activities').insert(rows);
+    if (ins.error) throw ins.error;
+
+    showToast(items.length + ' item' + (items.length !== 1 ? 's' : '') + ' added to Activity');
+
+    // Reload activities if on that tab
+    if (currentEngagementId) await loadActivities(currentEngagementId);
+
+  } catch (err) {
+    console.error('extractToActivity error:', err);
+    showToast('Extraction failed: ' + err.message);
+    var btn = document.querySelector('#inbox-item-' + itemId + ' .inbox-extract-btn');
+    if (btn) { btn.textContent = 'Extract to Activity'; btn.disabled = false; }
+  }
+}
+
+async function deleteInboxItem(itemId) {
+  try {
+    var res = await sb.from('inbox_items').delete().eq('id', itemId);
+    if (res.error) throw res.error;
+    var el = document.getElementById('inbox-item-' + itemId);
+    if (el) el.remove();
+    var remaining = document.querySelectorAll('#inbox-list .inbox-item');
+    if (remaining.length === 0) {
+      var empty = document.getElementById('inbox-empty');
+      if (empty) empty.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('deleteInboxItem error:', err);
+    showToast('Failed to remove item');
+  }
 }
 
 // ============================================================
@@ -1186,6 +1650,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Report action buttons
   var editBtn = document.querySelector('.rv-edit-btn');
   if (editBtn) editBtn.onclick = enableReportEdit;
+
+  var aiBtn = document.querySelector('.rv-ai-btn');
+  if (aiBtn) aiBtn.onclick = openAiBar;
 
   var exportBtn = document.querySelector('.rv-export-btn');
   if (exportBtn) exportBtn.onclick = exportReport;

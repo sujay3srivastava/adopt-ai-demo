@@ -5,6 +5,7 @@
   .tabs-row,
   .rv-action-bar,
   .rv-save-bar,
+  .rv-ai-bar,
   .prompt-toggle,
   .prompt-panel,
   .champ-actions,
@@ -12,7 +13,12 @@
   #view-admin,
   #view-comms,
   #view-user-control,
+  #view-integrations,
+  #view-inbox,
   .report-history,
+  .int-grid,
+  .inbox-add-panel,
+  #inbox-list,
   .no-print {
     display: none !important;
   }
