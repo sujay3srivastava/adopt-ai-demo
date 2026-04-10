@@ -8,7 +8,8 @@ const sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 let currentEngagementId = null;
 let currentReportId = null;
 let currentVersionNum = null;
-let reportEditMode = false;
+let currentReportData = null;
+let reportDirty = false;
 let brdOriginalHtml = {};
 
 // ============================================================
@@ -667,15 +668,11 @@ async function loadReports(engId, skipAutoLoad) {
 }
 
 function renderReportHistory(reports) {
-  // Group by version_num (week), preserving order (already sorted DESC)
   var groups = [];
   var groupMap = {};
   reports.forEach(function(r) {
     var vn = r.version_num;
-    if (!groupMap[vn]) {
-      groupMap[vn] = [];
-      groups.push(vn);
-    }
+    if (!groupMap[vn]) { groupMap[vn] = []; groups.push(vn); }
     groupMap[vn].push(r);
   });
 
@@ -688,15 +685,18 @@ function renderReportHistory(reports) {
       var chipClass = isDraft ? 'rh-chip draft' : 'rh-chip';
       var chipText = isDraft ? 'Draft' : 'Sent';
       var rev = r.revision || 1;
+      var revLabel = rev === 1 ? 'v' + vn : 'v' + vn + '.' + (rev - 1);
       var note = r.revision_note ? escHtml(r.revision_note.slice(0, 52)) : '';
-
       return [
-        '<div class="rh-item" onclick="loadReportVersion(\'' + r.id + '\')">',
+        '<div class="rh-item" onclick="loadReportVersion(\'' + r.id + '\')" data-id="' + r.id + '">',
         '  <div class="rh-item-main">',
-        '    <div class="rh-rev">v' + rev + '</div>',
+        '    <div class="rh-rev">' + revLabel + '</div>',
         note ? '    <div class="rh-rev-note">' + note + '</div>' : '',
         '  </div>',
-        '  <div class="' + chipClass + '">' + chipText + '</div>',
+        '  <div class="rh-item-right">',
+        '    <div class="' + chipClass + '">' + chipText + '</div>',
+        '    <button class="rh-restore-btn btn" onclick="event.stopPropagation();restoreVersion(\'' + r.id + '\')">Restore</button>',
+        '  </div>',
         '</div>'
       ].filter(Boolean).join('\n');
     }).join('\n');
@@ -712,45 +712,36 @@ function renderReportHistory(reports) {
 
 async function loadReportVersion(reportId) {
   try {
-    if (reportEditMode) exitReportEdit();
+    if (reportDirty) {
+      if (!confirm('You have unsaved changes. Discard them?')) return;
+    }
 
     var res = await sb.from('report_versions').select('*').eq('id', reportId).single();
     if (res.error) throw res.error;
     var report = res.data;
+
     currentReportId = reportId;
     currentVersionNum = report.version_num;
+    currentReportData = report;
+    reportDirty = false;
+    updateDirtyBadge();
 
-    // Mark active in history
-    document.querySelectorAll('.rh-item').forEach(function(item) {
-      item.classList.remove('active');
-    });
-    var allItems = document.querySelectorAll('.rh-item');
-    allItems.forEach(function(item) {
-      if (item.getAttribute('onclick') && item.getAttribute('onclick').indexOf(reportId) !== -1) {
-        item.classList.add('active');
-      }
-    });
-
-    var content = report.content || {};
-
-    // Update title
-    var titleEl = document.querySelector('.rv-title');
-    if (titleEl) {
+    // Update toolbar version info
+    var infoEl = document.getElementById('rv-version-info');
+    if (infoEl) {
       var isDraft = report.status === 'draft';
-      titleEl.textContent = (report.week_label || ('Version ' + report.version_num)) + '  \u00b7  ' + (isDraft ? 'Draft' : 'Sent') + (report.period_label ? '  \u00b7  ' + report.period_label : '');
+      infoEl.textContent = (report.week_label || ('Version ' + report.version_num))
+        + '  \u00b7  ' + (isDraft ? 'Draft' : 'Sent')
+        + (report.period_label ? '  \u00b7  ' + report.period_label : '');
     }
 
-    var rvBody = document.querySelector('.rv-body');
-    if (!rvBody) return;
+    // Mark active in sidebar
+    document.querySelectorAll('.rh-item').forEach(function(item) { item.classList.remove('active'); });
+    document.querySelectorAll('.rh-item').forEach(function(item) {
+      if (item.getAttribute('data-id') === reportId) item.classList.add('active');
+    });
 
-    rvBody.innerHTML = buildReportBody(report, content);
-
-    // Wire up edit btn for the new content
-    var editBtn = document.querySelector('.rv-edit-btn');
-    if (editBtn) {
-      editBtn.textContent = 'Edit Draft';
-      editBtn.onclick = enableReportEdit;
-    }
+    renderDocCanvas(report, report.content || {});
 
   } catch (err) {
     console.error('loadReportVersion error:', err);
@@ -758,43 +749,69 @@ async function loadReportVersion(reportId) {
   }
 }
 
-function buildReportBody(report, content) {
-  // Helper: colored status badge
-  function statusBadge(status) {
-    var cls = (status || '').toLowerCase().replace(/\s+/g, '-');
-    return '<span class="status-badge ' + escHtml(cls) + '">' + escHtml(status || '') + '</span>';
-  }
+// ============================================================
+//  DOCUMENT CANVAS RENDERING
+// ============================================================
 
-  // TL;DR
+function renderDocCanvas(report, content) {
+  var paper = document.getElementById('doc-paper');
+  if (!paper) return;
+  paper.innerHTML = buildDocPaperHtml(report, content);
+  wireTableCellEditors();
+  wireListItemEditors();
+  wireContentEditableTracking();
+}
+
+var DOC_ORN_RULE = '<svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet"><rect x="0" y="3" width="13" height="13" fill="#ff5203"/><rect x="18" y="3" width="13" height="13" fill="#0364ff"/><rect x="36" y="3" width="13" height="13" fill="#f7d241"/><rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/><line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/><rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/><rect x="608" y="3" width="13" height="13" fill="#f7d241"/><rect x="626" y="3" width="13" height="13" fill="#0364ff"/><rect x="644" y="3" width="13" height="13" fill="#ff5203"/></svg>';
+
+function statusBadge(status) {
+  var cls = (status || '').toLowerCase().replace(/\s+/g, '-');
+  return '<span class="status-badge ' + escHtml(cls) + '">' + escHtml(status || '') + '</span>';
+}
+
+function buildDocPaperHtml(report, content) {
+  // Try to get engagement name from the DOM (breadcrumb/project header area)
+  var projEl = document.querySelector('.proj-company');
+  var engName = projEl ? projEl.firstChild.textContent.trim() : 'Engagement';
+
+  // Doc header
+  var docHeader = [
+    '<div class="doc-header">',
+    '  <div class="doc-eyebrow">Weekly Status Report &nbsp;&middot;&nbsp; Lab0 &times; ' + escHtml(engName) + '</div>',
+    '  <div class="doc-week">' + escHtml(report.week_label || 'Report') + '</div>',
+    report.period_label ? '  <div class="doc-period">' + escHtml(report.period_label) + '</div>' : '',
+    '</div>'
+  ].filter(Boolean).join('\n');
+
+  // TL;DR — always contenteditable
   var tldrHtml = [
     '<div class="tldr" id="rv-tldr">',
     '  <span class="tldr-label">TL;DR</span>',
-    '  <p>' + escHtml(content.tldr || '') + '</p>',
+    '  <div class="tldr-body" contenteditable="true" data-field="tldr" spellcheck="true">' + escHtml(content.tldr || '') + '</div>',
     '</div>'
   ].join('\n');
 
-  // Plan vs Actual
-  var planRows = (content.plan_vs_actual || []).map(function(row) {
+  // Plan vs Actual — editable cells
+  var planRows = (content.plan_vs_actual || []).map(function(row, i) {
     return [
-      '<tr>',
-      '  <td>' + escHtml(row.committed || '') + '</td>',
-      '  <td>' + statusBadge(row.status || '') + '</td>',
-      '  <td class="pva-delta">' + escHtml(row.delta || '') + '</td>',
+      '<tr data-row="' + i + '">',
+      '  <td class="editable-cell" data-col="committed">' + escHtml(row.committed || '') + '</td>',
+      '  <td class="editable-cell status-cell" data-col="status">' + statusBadge(row.status || '') + '</td>',
+      '  <td class="editable-cell" data-col="delta">' + escHtml(row.delta || '') + '</td>',
       '</tr>'
     ].join('\n');
   }).join('\n');
 
-  var planVsActual = planRows ? [
+  var planSection = planRows ? [
     '<div class="subsec-hd">Plan vs. Actual</div>',
     '<div class="tbl"><table>',
-    '  <thead><tr><th>Committed</th><th>Status</th><th>Notes</th></tr></thead>',
-    '  <tbody>' + planRows + '</tbody>',
+    '  <thead><tr><th>Committed</th><th>Status</th><th>Delta</th></tr></thead>',
+    '  <tbody id="rv-plan-tbody">' + planRows + '</tbody>',
     '</table></div>'
   ].join('\n') : '';
 
-  // Activity items — colored left border by source, source pill badge
+  // Activities — read-only
   var sourceBorderColors = { fireflies: '#ff5203', slack: '#0364ff', jira: '#ddb800', loom: '#c060b0' };
-
   var activitiesHtml = (content.activities || []).map(function(act) {
     var src = (act.source || '').toLowerCase();
     var borderColor = sourceBorderColors[src] || '#c0a070';
@@ -815,39 +832,37 @@ function buildReportBody(report, content) {
     ? '<div class="subsec-hd mt-20">This Week\'s Activity</div><div class="act-list">' + activitiesHtml + '</div>'
     : '';
 
-  // Key Deliverables
-  var delivRows = (content.deliverables || []).map(function(d) {
+  // Deliverables — editable cells
+  var delivRows = (content.deliverables || []).map(function(d, i) {
     return [
-      '<tr>',
-      '  <td>' + escHtml(d.deliverable || '') + '</td>',
-      '  <td><span class="type-chip">' + escHtml(d.type || '') + '</span></td>',
-      '  <td>' + statusBadge(d.status || '') + '</td>',
-      '  <td>' + escHtml(d.owner || '') + '</td>',
-      '  <td class="ticket-cell">' + escHtml(d.ticket || '') + '</td>',
+      '<tr data-row="' + i + '">',
+      '  <td class="editable-cell" data-col="deliverable">' + escHtml(d.deliverable || '') + '</td>',
+      '  <td class="editable-cell" data-col="type"><span class="type-chip">' + escHtml(d.type || '') + '</span></td>',
+      '  <td class="editable-cell status-cell" data-col="status">' + statusBadge(d.status || '') + '</td>',
+      '  <td class="editable-cell" data-col="owner">' + escHtml(d.owner || '') + '</td>',
+      '  <td class="editable-cell ticket-cell" data-col="ticket">' + escHtml(d.ticket || '') + '</td>',
       '</tr>'
     ].join('\n');
   }).join('\n');
 
-  var deliverablesSection = delivRows
-    ? [
-        '<div class="subsec-hd mt-20">Key Deliverables</div>',
-        '<div class="tbl"><table>',
-        '  <thead><tr><th>Deliverable</th><th>Type</th><th>Status</th><th>Owner</th><th>Ticket</th></tr></thead>',
-        '  <tbody>' + delivRows + '</tbody>',
-        '</table></div>'
-      ].join('\n')
-    : '';
+  var deliverablesSection = delivRows ? [
+    '<div class="subsec-hd mt-20">Key Deliverables</div>',
+    '<div class="tbl"><table>',
+    '  <thead><tr><th>Deliverable</th><th>Type</th><th>Status</th><th>Owner</th><th>Ticket</th></tr></thead>',
+    '  <tbody id="rv-deliv-tbody">' + delivRows + '</tbody>',
+    '</table></div>'
+  ].join('\n') : '';
 
-  // Next Week Commitments — numbered, with owner pill + date
+  // Next Week — editable text spans
   var nextItems = (content.next_week || []).map(function(item, i) {
     return [
-      '<div class="nxt-item">',
-      '  <span class="nxt-num">' + (i + 1) + '</span>',
+      '<div class="nxt-item" data-row="' + i + '">',
+      '  <span class="nxt-num">' + (i + 1) + '.</span>',
       '  <div class="nxt-content">',
-      '    <div class="nxt-text">' + escHtml(item.text || '') + '</div>',
+      '    <div class="nxt-text editable-text" data-col="text">' + escHtml(item.text || '') + '</div>',
       '    <div class="nxt-meta">',
-      '      <span class="owner-pill">' + escHtml(item.owner || '') + '</span>',
-      item.date ? '      <span class="nxt-date">' + escHtml(item.date) + '</span>' : '',
+      '      <span class="owner-pill editable-text" data-col="owner">' + escHtml(item.owner || '') + '</span>',
+      item.date ? '      <span class="nxt-date editable-text" data-col="date">' + escHtml(item.date) + '</span>' : '',
       '    </div>',
       '  </div>',
       '</div>'
@@ -859,106 +874,237 @@ function buildReportBody(report, content) {
     '<div id="rv-next-week">' + (nextItems || '<p style="font-size:14px;color:var(--ink4);padding:12px 0;">No commitments logged.</p>') + '</div>'
   ].join('\n');
 
-  // Blockers
+  // Blockers — editable
   var blockersHtml = '';
   if (content.blockers && content.blockers.length > 0) {
-    blockersHtml = content.blockers.map(function(b) {
-      return '<div class="blocker-item">' + escHtml(b) + '</div>';
+    blockersHtml = content.blockers.map(function(b, i) {
+      return '<div class="blocker-item editable-text" data-row="' + i + '">' + escHtml(b) + '</div>';
     }).join('\n');
   } else {
     blockersHtml = '<div class="no-blocker">No active blockers.</div>';
   }
   var blockersSection = '<div class="subsec-hd mt-20">Blockers</div>' + blockersHtml;
 
-  // Champion note
+  // Champion note — always contenteditable
   var champNote = content.champion_note || '';
   var champLabel = content.champion_label || 'Champion Note';
   var champSection = [
     '<div class="champ" id="rv-champion-note">',
     '  <span class="champ-label">' + escHtml(champLabel) + '</span>',
-    '  <div class="champ-body">' + escHtml(champNote) + '</div>',
+    '  <div class="champ-body" contenteditable="true" data-field="champion_note" spellcheck="true">' + escHtml(champNote) + '</div>',
     '</div>'
   ].join('\n');
 
-  // Ornamental rule SVG
-  var ornRule = '<svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet"><rect x="0" y="3" width="13" height="13" fill="#ff5203"/><rect x="18" y="3" width="13" height="13" fill="#0364ff"/><rect x="36" y="3" width="13" height="13" fill="#f7d241"/><rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/><line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/><rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/><rect x="608" y="3" width="13" height="13" fill="#f7d241"/><rect x="626" y="3" width="13" height="13" fill="#0364ff"/><rect x="644" y="3" width="13" height="13" fill="#ff5203"/></svg>';
-
   return [
+    docHeader,
     tldrHtml,
-    ornRule,
-    planVsActual,
+    DOC_ORN_RULE,
+    planSection,
     activitiesSection,
     deliverablesSection,
     nextWeekSection,
     blockersSection,
-    ornRule,
+    DOC_ORN_RULE,
     champSection
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 // ============================================================
-//  REPORT EDITING
+//  INLINE EDITING WIRING
 // ============================================================
 
-function enableReportEdit() {
-  if (reportEditMode) return;
-  reportEditMode = true;
+function wireTableCellEditors() {
+  document.querySelectorAll('#doc-paper .editable-cell').forEach(function(cell) {
+    cell.addEventListener('click', function() {
+      if (cell.querySelector('input, select')) return;
+      var col = cell.getAttribute('data-col');
+      var isStatus = cell.classList.contains('status-cell');
 
-  // Convert TL;DR p to textarea
-  var tldrEl = document.getElementById('rv-tldr');
-  if (tldrEl) {
-    var p = tldrEl.querySelector('p');
-    if (p) {
-      var ta = document.createElement('textarea');
-      ta.id = 'rv-tldr-ta';
-      ta.rows = 4;
-      ta.style.cssText = 'width:100%;font-family:Inter,sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule2);padding:8px 12px;line-height:1.65;resize:vertical;';
-      ta.value = p.textContent.trim();
-      p.replaceWith(ta);
-    }
-  }
-
-  // Convert champion note body to textarea
-  var champEl = document.getElementById('rv-champion-note');
-  if (champEl) {
-    var champBody = champEl.querySelector('.champ-body');
-    if (champBody) {
-      var champTa = document.createElement('textarea');
-      champTa.id = 'rv-champ-ta';
-      champTa.rows = 4;
-      champTa.style.cssText = 'width:100%;font-family:Inter,sans-serif;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule2);padding:8px 12px;line-height:1.65;resize:vertical;';
-      champTa.value = champBody.textContent.trim();
-      champBody.replaceWith(champTa);
-    }
-  }
-
-  // Show save bar
-  var saveBar = document.querySelector('.rv-save-bar');
-  if (saveBar) saveBar.style.display = 'flex';
-
-  // Update edit button text
-  var editBtn = document.querySelector('.rv-edit-btn');
-  if (editBtn) editBtn.textContent = 'Editing...';
+      if (isStatus) {
+        var current = cell.querySelector('.status-badge');
+        var currentVal = current ? current.textContent.trim() : '';
+        var statuses = ['Done', 'In Progress', 'Behind', 'Blocked', 'Planning', 'Live', 'Complete'];
+        var sel = document.createElement('select');
+        sel.className = 'inline-select';
+        statuses.forEach(function(s) {
+          var opt = document.createElement('option');
+          opt.value = s; opt.textContent = s;
+          if (s.toLowerCase() === currentVal.toLowerCase()) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        cell.innerHTML = '';
+        cell.appendChild(sel);
+        sel.focus();
+        sel.addEventListener('change', function() { sel.blur(); });
+        sel.addEventListener('blur', function() {
+          cell.innerHTML = statusBadge(sel.value);
+          markDirty();
+        });
+      } else {
+        // For type-chip cells, get text from inside the chip
+        var chip = cell.querySelector('.type-chip, .ticket-cell');
+        var orig = chip ? chip.textContent.trim() : cell.textContent.trim();
+        var inp = document.createElement('input');
+        inp.className = 'inline-input';
+        inp.type = 'text';
+        inp.value = orig;
+        cell.innerHTML = '';
+        cell.appendChild(inp);
+        inp.focus(); inp.select();
+        inp.addEventListener('blur', function() {
+          // Re-wrap type col in type-chip
+          if (col === 'type') {
+            cell.innerHTML = '<span class="type-chip">' + escHtml(inp.value) + '</span>';
+          } else {
+            cell.textContent = inp.value;
+          }
+          markDirty();
+        });
+        inp.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+          if (e.key === 'Escape') {
+            if (col === 'type') {
+              cell.innerHTML = '<span class="type-chip">' + escHtml(orig) + '</span>';
+            } else {
+              cell.textContent = orig;
+            }
+          }
+        });
+      }
+    });
+  });
 }
 
-async function saveReportEdit() {
+function wireListItemEditors() {
+  document.querySelectorAll('#doc-paper .editable-text').forEach(function(el) {
+    el.addEventListener('click', function() {
+      if (el.querySelector('input')) return;
+      var orig = el.textContent.trim();
+      var inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'inline-input';
+      inp.value = orig;
+      el.innerHTML = '';
+      el.appendChild(inp);
+      inp.focus(); inp.select();
+      inp.addEventListener('blur', function() { el.textContent = inp.value; markDirty(); });
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+        if (e.key === 'Escape') { el.textContent = orig; }
+      });
+    });
+  });
+}
+
+function wireContentEditableTracking() {
+  document.querySelectorAll('#doc-paper [contenteditable="true"]').forEach(function(el) {
+    el.addEventListener('input', function() { markDirty(); });
+  });
+}
+
+function markDirty() {
+  reportDirty = true;
+  updateDirtyBadge();
+}
+
+function updateDirtyBadge() {
+  var b = document.getElementById('rv-dirty-badge');
+  if (b) b.style.display = reportDirty ? 'inline-flex' : 'none';
+}
+
+// ============================================================
+//  CONTENT SERIALIZER
+// ============================================================
+
+function collectDocContent() {
+  var paper = document.getElementById('doc-paper');
+  if (!paper) return {};
+
+  function cellText(cell) {
+    if (!cell) return '';
+    var inp = cell.querySelector('input.inline-input');
+    if (inp) return inp.value.trim();
+    var sel = cell.querySelector('select.inline-select');
+    if (sel) return sel.value;
+    var badge = cell.querySelector('.status-badge');
+    if (badge) return badge.textContent.trim();
+    var chip = cell.querySelector('.type-chip');
+    if (chip) return chip.textContent.trim();
+    return cell.textContent.trim();
+  }
+
+  var tldrEl = paper.querySelector('[data-field="tldr"]');
+  var tldr = tldrEl ? tldrEl.textContent.trim() : '';
+
+  var planRows = [];
+  paper.querySelectorAll('#rv-plan-tbody tr[data-row]').forEach(function(tr) {
+    planRows.push({
+      committed: cellText(tr.querySelector('[data-col="committed"]')),
+      status:    cellText(tr.querySelector('[data-col="status"]')),
+      delta:     cellText(tr.querySelector('[data-col="delta"]'))
+    });
+  });
+
+  var activities = (currentReportData && currentReportData.content && currentReportData.content.activities) || [];
+
+  var deliverables = [];
+  paper.querySelectorAll('#rv-deliv-tbody tr[data-row]').forEach(function(tr) {
+    deliverables.push({
+      deliverable: cellText(tr.querySelector('[data-col="deliverable"]')),
+      type:        cellText(tr.querySelector('[data-col="type"]')),
+      status:      cellText(tr.querySelector('[data-col="status"]')),
+      owner:       cellText(tr.querySelector('[data-col="owner"]')),
+      ticket:      cellText(tr.querySelector('[data-col="ticket"]'))
+    });
+  });
+
+  var next_week = [];
+  paper.querySelectorAll('#rv-next-week .nxt-item[data-row]').forEach(function(item) {
+    next_week.push({
+      text:  cellText(item.querySelector('[data-col="text"]')),
+      owner: cellText(item.querySelector('[data-col="owner"]')),
+      date:  cellText(item.querySelector('[data-col="date"]')) || ''
+    });
+  });
+
+  var blockers = [];
+  paper.querySelectorAll('.blocker-item[data-row]').forEach(function(item) {
+    var txt = cellText(item);
+    if (txt) blockers.push(txt);
+  });
+
+  var champEl = paper.querySelector('[data-field="champion_note"]');
+  var champion_note = champEl ? champEl.textContent.trim() : '';
+  var champion_label = (currentReportData && currentReportData.content && currentReportData.content.champion_label) || 'Champion Note';
+
+  return { tldr: tldr, plan_vs_actual: planRows, activities: activities, deliverables: deliverables, next_week: next_week, blockers: blockers, champion_note: champion_note, champion_label: champion_label };
+}
+
+// ============================================================
+//  SAVE VERSION
+// ============================================================
+
+function openSaveModal() {
+  if (!currentReportId) { showToast('No report loaded'); return; }
+  var noteEl = document.getElementById('save-version-note');
+  if (noteEl) noteEl.value = '';
+  showModal('modal-save-version');
+  setTimeout(function() { if (noteEl) noteEl.focus(); }, 50);
+}
+
+function hideSaveModal() {
+  hideModal('modal-save-version');
+}
+
+async function confirmSaveVersion() {
   try {
-    var tldrTa = document.getElementById('rv-tldr-ta');
-    var champTa = document.getElementById('rv-champ-ta');
+    var note = (document.getElementById('save-version-note') || {}).value || '';
+    var content = collectDocContent();
 
-    var tldrVal = tldrTa ? tldrTa.value : '';
-    var champVal = champTa ? champTa.value : '';
-
-    // Fetch full current row
     var res = await sb.from('report_versions').select('*').eq('id', currentReportId).single();
     if (res.error) throw res.error;
     var current = res.data;
 
-    var content = Object.assign({}, current.content || {});
-    content.tldr = tldrVal;
-    content.champion_note = champVal;
-
-    // Get next revision number for this week
     var rRes = await sb.from('report_versions')
       .select('revision')
       .eq('engagement_id', current.engagement_id)
@@ -967,70 +1113,153 @@ async function saveReportEdit() {
       .limit(1);
     var nextRev = ((rRes.data && rRes.data.length > 0) ? (rRes.data[0].revision || 1) : 1) + 1;
 
-    // Insert as new revision
     var ins = await sb.from('report_versions').insert({
       engagement_id: current.engagement_id,
-      version_num: current.version_num,
-      week_label: current.week_label,
-      period_label: current.period_label,
-      content: content,
-      status: current.status,
-      revision: nextRev,
-      revision_note: 'Manual edit'
+      version_num:   current.version_num,
+      week_label:    current.week_label,
+      period_label:  current.period_label,
+      content:       content,
+      status:        current.status,
+      revision:      nextRev,
+      revision_note: note || 'Manual edit'
     }).select().single();
     if (ins.error) throw ins.error;
 
-    exitReportEdit();
-    showToast('Saved as v' + nextRev);
-
+    hideSaveModal();
     currentReportId = ins.data.id;
+    currentReportData = ins.data;
+    reportDirty = false;
+    updateDirtyBadge();
+    var vn2 = current.version_num || 1;
+    var revLabel2 = nextRev === 1 ? 'v' + vn2 : 'v' + vn2 + '.' + (nextRev - 1);
+    showToast('Saved as ' + revLabel2);
+
     await loadReports(current.engagement_id, true);
-    await loadReportVersion(ins.data.id);
+    document.querySelectorAll('.rh-item').forEach(function(item) {
+      if (item.getAttribute('data-id') === ins.data.id) item.classList.add('active');
+    });
 
   } catch (err) {
-    console.error('saveReportEdit error:', err);
-    showToast('Failed to save report');
+    console.error('confirmSaveVersion error:', err);
+    showToast('Failed to save');
   }
 }
 
-function exitReportEdit() {
-  reportEditMode = false;
-
-  var saveBar = document.querySelector('.rv-save-bar');
-  if (saveBar) saveBar.style.display = 'none';
-
-  var editBtn = document.querySelector('.rv-edit-btn');
-  if (editBtn) {
-    editBtn.textContent = 'Edit Draft';
-    editBtn.onclick = enableReportEdit;
-  }
-
-  // Restore TL;DR if still in textarea form
-  var tldrEl = document.getElementById('rv-tldr');
-  if (tldrEl) {
-    var ta = document.getElementById('rv-tldr-ta');
-    if (ta) {
-      var p = document.createElement('p');
-      p.textContent = ta.value;
-      ta.replaceWith(p);
-    }
-  }
-
-  // Restore champion body if still in textarea form
-  var champEl = document.getElementById('rv-champion-note');
-  if (champEl) {
-    var champTa = document.getElementById('rv-champ-ta');
-    if (champTa) {
-      var div = document.createElement('div');
-      div.className = 'champ-body';
-      div.textContent = champTa.value;
-      champTa.replaceWith(div);
-    }
-  }
+async function restoreVersion(reportId) {
+  await loadReportVersion(reportId);
+  markDirty();
+  showToast('Restored. Click Save Version to create a new revision.');
 }
 
-function exportReport() {
+// ============================================================
+//  EXPORT
+// ============================================================
+
+function exportReportPdf() {
   window.print();
+}
+
+function exportReportHtml() {
+  var paper = document.getElementById('doc-paper');
+  if (!paper) { showToast('No report loaded'); return; }
+
+  // Clone and clean up for export
+  var clone = paper.cloneNode(true);
+
+  clone.querySelectorAll('input.inline-input').forEach(function(inp) {
+    inp.parentNode.replaceChild(document.createTextNode(inp.value), inp);
+  });
+  clone.querySelectorAll('select.inline-select').forEach(function(sel) {
+    var cls = sel.value.toLowerCase().replace(/\s+/g, '-');
+    var span = document.createElement('span');
+    span.className = 'status-badge ' + cls;
+    span.textContent = sel.value;
+    sel.parentNode.replaceChild(span, sel);
+  });
+  clone.querySelectorAll('[contenteditable]').forEach(function(el) {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('spellcheck');
+    el.removeAttribute('data-field');
+  });
+  clone.querySelectorAll('[data-col],[data-row]').forEach(function(el) {
+    el.removeAttribute('data-col');
+    el.removeAttribute('data-row');
+  });
+
+  var weekLabel = (currentReportData && currentReportData.week_label) || 'report';
+  var clientSlug = 'report';
+  var weekSlug = weekLabel.toLowerCase().replace(/\s+/g, '-');
+  var filename = clientSlug + '-' + weekSlug + '.html';
+
+  var inlineStyles = [
+    ':root{font-size:16px;}',
+    'body{background:#e8e0d4;font-family:Inter,Arial,sans-serif;margin:0;padding:40px 0;}',
+    '.doc-paper{max-width:820px;margin:0 auto;background:#fcf3d9;padding:56px 64px;box-shadow:0 2px 24px rgba(0,0,0,.10);color:#1a0e08;}',
+    '.doc-header{text-align:center;padding:0 0 32px;border-bottom:1.5px solid #c0a070;margin-bottom:32px;}',
+    '.doc-eyebrow{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#7d6255;margin-bottom:14px;}',
+    '.doc-week{font-size:28px;font-weight:700;letter-spacing:-.02em;color:#1a0e08;margin-bottom:4px;}',
+    '.doc-period{font-size:14px;color:#7a6050;margin-bottom:20px;}',
+    '.tldr{border-left:4px solid #ff5203;background:rgba(255,82,3,.05);padding:14px 18px;margin-bottom:20px;}',
+    '.tldr-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#ff5203;display:block;margin-bottom:6px;}',
+    '.tldr-body{font-size:14.5px;line-height:1.7;color:#3d2a1a;}',
+    '.subsec-hd{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7a6050;padding-bottom:8px;border-bottom:1px solid #dcc8a8;margin:24px 0 12px;}',
+    '.mt-20{margin-top:20px;}',
+    '.tbl table{width:100%;border-collapse:collapse;font-size:13.5px;}',
+    '.tbl th{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7a6050;padding:7px 10px;border-bottom:1.5px solid #c0a070;text-align:left;}',
+    '.tbl td{padding:9px 10px;border-bottom:1px solid #dcc8a8;color:#3d2a1a;vertical-align:top;}',
+    '.status-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:0;}',
+    '.status-badge.done,.status-badge.live,.status-badge.complete{background:#dcfce7;color:#15692e;}',
+    '.status-badge.in-progress{background:#dbeafe;color:#0347b0;}',
+    '.status-badge.behind{background:#ffedd5;color:#b83000;}',
+    '.status-badge.blocked{background:#fee2e2;color:#991b1b;}',
+    '.status-badge.planning{background:#f3f4f6;color:#374151;}',
+    '.type-chip{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid #dcc8a8;color:#7a6050;}',
+    '.ticket-cell{font-family:monospace;font-size:11.5px;color:#7d6255;}',
+    '.act-list{margin:0;}',
+    '.act-item{padding:12px 0 12px 14px;border-left:3px solid #c0a070;margin-bottom:10px;}',
+    '.act-source-row{display:flex;gap:8px;margin-bottom:5px;align-items:center;}',
+    '.source-pill{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:#f3f4f6;color:#374151;}',
+    '.source-pill.slack{background:#dbeafe;color:#0364ff;}',
+    '.source-pill.jira{background:#fef9c3;color:#6b5200;}',
+    '.source-pill.fireflies{background:#ffedd5;color:#b83000;}',
+    '.source-pill.loom{background:#fdf4ff;color:#7a1f6a;}',
+    '.act-date{font-size:11px;color:#7d6255;}',
+    '.act-text{font-size:13.5px;color:#3d2a1a;line-height:1.55;}',
+    '.nxt-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #dcc8a8;align-items:flex-start;}',
+    '.nxt-num{font-size:13px;font-weight:700;color:#7a6050;flex-shrink:0;padding-top:1px;}',
+    '.nxt-content{flex:1;}',
+    '.nxt-text{font-size:14px;color:#3d2a1a;margin-bottom:4px;}',
+    '.nxt-meta{display:flex;gap:8px;align-items:center;}',
+    '.owner-pill{font-size:11px;font-weight:600;background:#f3f4f6;color:#3d2a1a;padding:2px 8px;}',
+    '.nxt-date{font-size:11px;color:#7d6255;}',
+    '.blocker-item{background:rgba(153,27,27,.04);border-left:3px solid #991b1b;padding:10px 14px;margin-bottom:8px;font-size:14px;color:#3d2a1a;}',
+    '.no-blocker{padding:12px 14px;background:rgba(247,210,65,.1);border-left:3px solid #f7d241;font-size:14px;color:#3d2a1a;}',
+    '.champ{border-left:4px solid #c060b0;padding:16px 20px;background:rgba(192,96,176,.04);margin-top:20px;}',
+    '.champ-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c060b0;display:block;margin-bottom:10px;}',
+    '.champ-body{font-size:14.5px;line-height:1.7;color:#3d2a1a;}',
+    '.orn-rule{display:block;width:100%;margin:20px 0;}'
+  ].join('\n');
+
+  var fullHtml = [
+    '<!DOCTYPE html><html lang="en"><head>',
+    '<meta charset="UTF-8">',
+    '<meta name="viewport" content="width=device-width,initial-scale=1.0">',
+    '<title>' + escHtml(weekLabel) + ' Status Report</title>',
+    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">',
+    '<style>' + inlineStyles + '</style>',
+    '</head><body>',
+    '<div class="doc-paper">',
+    clone.innerHTML,
+    '</div>',
+    '</body></html>'
+  ].join('\n');
+
+  var blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported ' + filename);
 }
 
 // ============================================================
@@ -1097,6 +1326,11 @@ async function generateReport() {
       }
     });
 
+    // Show skeleton while generating
+    var docPaper = document.getElementById('doc-paper');
+    var docSkeleton = document.getElementById('doc-skeleton');
+    if (docPaper) docPaper.style.display = 'none';
+    if (docSkeleton) docSkeleton.style.display = 'block';
     showToast('Generating with Claude...');
 
     var resp = await fetch('http://localhost:3001/api/generate-report', {
@@ -1126,10 +1360,16 @@ async function generateReport() {
     // Navigate to reports and load new version
     goTo('view-reports');
     setActiveTab('reports');
+    if (docSkeleton) docSkeleton.style.display = 'none';
+    if (docPaper) docPaper.style.display = 'block';
     await loadReports(currentEngagementId);
 
   } catch (err) {
     console.error('generateReport error:', err);
+    var docPaper2 = document.getElementById('doc-paper');
+    var docSkeleton2 = document.getElementById('doc-skeleton');
+    if (docSkeleton2) docSkeleton2.style.display = 'none';
+    if (docPaper2) docPaper2.style.display = 'block';
     showToast('Generation failed: ' + err.message);
   }
 }
@@ -1140,6 +1380,9 @@ async function editWithAI() {
   var promptEl = document.getElementById('rv-ai-prompt');
   if (!promptEl || !promptEl.value.trim()) { showToast('Enter a prompt first'); return; }
   var userPrompt = promptEl.value.trim();
+
+  var submitBtn = document.querySelector('.rv-ai-submit');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Editing...'; }
 
   try {
     // Fetch current row
@@ -1187,7 +1430,8 @@ async function editWithAI() {
     }).select().single();
     if (ins.error) throw ins.error;
 
-    showToast('Saved as v' + nextRev);
+    var vn3 = current.version_num || 1;
+    showToast('Saved as ' + (nextRev === 1 ? 'v' + vn3 : 'v' + vn3 + '.' + (nextRev - 1)));
     closeAiBar();
     currentReportId = ins.data.id;
     await loadReports(current.engagement_id, true);
@@ -1196,6 +1440,8 @@ async function editWithAI() {
   } catch (err) {
     console.error('editWithAI error:', err);
     showToast('Edit failed: ' + err.message);
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Edit with AI'; }
   }
 }
 
@@ -1646,24 +1892,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Gear button -> user control
   var gear = document.querySelector('.gear-btn');
   if (gear) gear.onclick = function() { goTo('view-user-control'); };
-
-  // Report action buttons
-  var editBtn = document.querySelector('.rv-edit-btn');
-  if (editBtn) editBtn.onclick = enableReportEdit;
-
-  var aiBtn = document.querySelector('.rv-ai-btn');
-  if (aiBtn) aiBtn.onclick = openAiBar;
-
-  var exportBtn = document.querySelector('.rv-export-btn');
-  if (exportBtn) exportBtn.onclick = exportReport;
-
-  var saveBar = document.querySelector('.rv-save-bar');
-  if (saveBar) {
-    var confirmBtn = saveBar.querySelector('.rv-save-confirm');
-    if (confirmBtn) confirmBtn.addEventListener('click', saveReportEdit);
-    var cancelBtn = saveBar.querySelector('.rv-save-cancel');
-    if (cancelBtn) cancelBtn.addEventListener('click', exitReportEdit);
-  }
 
   // Wire up BRD edit buttons if present
   document.querySelectorAll('.sec-edit-btn[data-section]').forEach(function(btn) {

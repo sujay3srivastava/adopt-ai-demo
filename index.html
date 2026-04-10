@@ -826,6 +826,8 @@
     <button class="tab-btn" data-tab="brd" onclick="goTo('view-project'); setActiveTab('brd')">BRD</button>
     <button class="tab-btn" data-tab="comms" onclick="goTo('view-comms'); setActiveTab('comms')">Activity</button>
     <button class="tab-btn active" data-tab="reports" onclick="goTo('view-reports'); setActiveTab('reports')">Reports</button>
+    <button class="tab-btn" data-tab="integrations" onclick="goTo('view-integrations'); setActiveTab('integrations'); loadProjectIntegrations(currentEngagementId)">Integrations</button>
+    <button class="tab-btn" data-tab="inbox" onclick="goTo('view-inbox'); setActiveTab('inbox'); loadInbox(currentEngagementId)">Inbox</button>
   </div>
   <!-- /Project Header -->
 
@@ -856,302 +858,47 @@
     <!-- Right: Report Viewer -->
     <div class="report-viewer">
 
-      <!-- Action bar -->
-      <div class="rv-action-bar">
-        <div class="rv-title">Week 14 &nbsp;·&nbsp; Draft &nbsp;·&nbsp; Apr 14-18, 2026</div>
-        <div class="rv-actions">
-          <button class="btn rv-edit-btn">Edit draft</button>
-          <button class="btn rv-ai-btn">Edit with AI</button>
-          <button class="btn rv-export-btn">Export PDF</button>
-          <button class="btn btn-dark">Send to champion &rarr;</button>
+      <!-- Doc toolbar -->
+      <div class="rv-toolbar">
+        <div class="rv-toolbar-left">
+          <span class="rv-version-info" id="rv-version-info">Select a report</span>
+          <span class="rv-dirty-badge" id="rv-dirty-badge" style="display:none">Unsaved changes</span>
+        </div>
+        <div class="rv-toolbar-right">
+          <button class="btn rv-ai-toggle-btn" onclick="openAiBar()">Edit with AI</button>
+          <button class="btn rv-save-btn" onclick="openSaveModal()">Save Version</button>
+          <button class="btn rv-export-html-btn" onclick="exportReportHtml()">Export</button>
+          <button class="btn rv-export-pdf-btn" onclick="exportReportPdf()">Export PDF</button>
+          <button class="btn btn-dark rv-generate-btn" onclick="generateReport()">Generate New Week &rarr;</button>
         </div>
       </div>
 
-      <!-- Save bar (shown during manual edit mode) -->
-      <div class="rv-save-bar">
-        <button class="btn btn-orange rv-save-confirm">Save draft</button>
-        <button class="btn rv-save-cancel">Cancel</button>
-      </div>
-
-      <!-- AI prompt bar (shown when Edit with AI is clicked) -->
-      <div class="rv-ai-bar" id="rv-ai-bar">
-        <textarea id="rv-ai-prompt" placeholder="e.g. make the TL;DR more concise, rewrite the champion note in a warmer tone, add a blocker about the SSO integration..." rows="2"></textarea>
+      <!-- AI edit bar (hidden by default) -->
+      <div class="rv-ai-bar" id="rv-ai-bar" style="display:none">
+        <textarea id="rv-ai-prompt" placeholder="e.g. make the TL;DR more concise, rewrite the champion note in a warmer tone..." rows="2"></textarea>
         <div class="rv-ai-actions">
           <button class="btn btn-orange rv-ai-submit" onclick="editWithAI()">Edit with AI</button>
           <button class="btn rv-ai-cancel" onclick="closeAiBar()">Cancel</button>
         </div>
       </div>
 
-      <!-- Report body — replaced by loadReportVersion() -->
-      <div class="rv-body">
-
-        <!-- Lab0 colophon -->
-        <div class="lab0-colophon" style="margin-top:0;border-top:none;">
-          <div class="lab0-mark">
-            <svg width="48" height="14" viewBox="0 0 48 14">
-              <rect x="0" y="2" width="10" height="10" fill="#ff5203"/>
-              <rect x="13" y="2" width="10" height="10" fill="#0364ff"/>
-              <rect x="26" y="2" width="10" height="10" fill="#f7d241"/>
-              <rect x="39" y="2" width="10" height="10" fill="#ffc0f5"/>
-            </svg>
-            <span class="lm-name">Lab0 Intelligence Platform</span>
-          </div>
-          <div class="lab0-sources">
-            <span class="src">
-              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ff5203"/></svg>
-              Fireflies &nbsp;2 meetings
-            </span>
-            <span class="src">
-              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#0364ff"/></svg>
-              Slack &nbsp;18 messages
-            </span>
-            <span class="src">
-              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#f7d241"/></svg>
-              Jira &nbsp;2 tickets
-            </span>
-            <span class="src">
-              <svg width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="#ffc0f5"/></svg>
-              Loom &nbsp;1 video
-            </span>
-          </div>
-          <div class="lab0-timing">Generated Apr 18, 2026 &nbsp;·&nbsp; 7:52 AM PST</div>
+      <!-- Document canvas -->
+      <div class="doc-canvas" id="doc-canvas">
+        <!-- Loading skeleton (shown during generation) -->
+        <div class="doc-paper" id="doc-skeleton" style="display:none">
+          <div class="skel-line skel-title"></div>
+          <div class="skel-line skel-sub"></div>
+          <div class="skel-block"></div>
+          <div class="skel-block"></div>
+          <div class="skel-block skel-block-short"></div>
         </div>
-
-        <!-- Report title block -->
-        <div class="rtp">
-          <div class="rtp-eyebrow">Weekly Status Report &nbsp;·&nbsp; Adopt AI &times; Spendflo</div>
-
-<div class="rtp-week-of">Week 14 of 26</div>
-          <div class="rtp-period">Apr 14-18, 2026</div>
-          <div class="rtp-status-row">
-            <div class="status-stamp">
-              <span class="pulse" style="width:12px;height:12px;display:inline-block;background:var(--O);flex-shrink:0;"></span>
-              On Track
-            </div>
-          </div>
-          <div class="rtp-meta">
-            <div class="rtm-cell">
-              <span class="rtm-label">Lead</span>
-              <span class="rtm-val">Anirudh S.</span>
-            </div>
-            <div class="rtm-cell">
-              <span class="rtm-label">FDE</span>
-              <span class="rtm-val">Rahul M.</span>
-            </div>
-            <div class="rtm-cell">
-              <span class="rtm-label">Champion</span>
-              <span class="rtm-val">Yash Kothari</span>
-            </div>
-            <div class="rtm-cell">
-              <span class="rtm-label">Progress</span>
-              <span class="rtm-val">Month 4 of 6</span>
-            </div>
-            <div class="rtm-cell">
-              <span class="rtm-label">Gate</span>
-              <span class="rtm-val">Jul 5, 2026</span>
-            </div>
-          </div>
-        </div><!-- /rtp -->
-
-        <!-- TL;DR -->
-        <div class="tldr" id="rv-tldr">
-          <span class="tldr-label">TL;DR</span>
-          <p>Month 4 CRUD milestone on track to complete. Contract record creation is in staging — production sign-off expected Monday April 21. Eval pass rate recovered to 93.2%, above the &ge;93% target. Yash confirmed contract creation is his top priority; live demo scheduled Apr 22.</p>
+        <!-- Live paper — owned entirely by renderDocCanvas() -->
+        <div class="doc-paper" id="doc-paper">
+          <p style="color:var(--ink4);text-align:center;padding:60px 0;font-size:14px;">Select a report version to view it.</p>
         </div>
+      </div>
 
-        <!-- Ornamental divider -->
-        <svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet">
-          <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
-          <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
-          <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
-          <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
-          <line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/>
-          <rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/>
-          <rect x="608" y="3" width="13" height="13" fill="#f7d241"/>
-          <rect x="626" y="3" width="13" height="13" fill="#0364ff"/>
-          <rect x="644" y="3" width="13" height="13" fill="#ff5203"/>
-        </svg>
-
-        <!-- Plan vs Actual -->
-        <div class="subsec-hd">Plan vs. Actual &nbsp;&#8212;&nbsp; BRD Section 3, Month 4</div>
-        <div class="tbl">
-          <table>
-            <thead>
-              <tr>
-                <th>Committed Scope (BRD Section 3)</th>
-                <th>Status &mdash; Week 14</th>
-                <th>Delta</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Procurement request creation</td>
-                <td>Shipped — Apr 9</td>
-                <td><span style="color:var(--O);font-style:italic;">On plan</span></td>
-              </tr>
-              <tr>
-                <td>Contract record creation</td>
-                <td>Staging — sign-off pending</td>
-                <td><span style="color:var(--O);">On plan</span></td>
-              </tr>
-              <tr>
-                <td>Power user flows for finance leads</td>
-                <td>Scoped with Yash — in progress</td>
-                <td><span style="color:var(--O);">On plan</span></td>
-              </tr>
-              <tr>
-                <td>Eval pass rate &ge;93% maintained</td>
-                <td>93.2% — recovered</td>
-                <td><span style="color:var(--O);">On target &#10003;</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- This Week's Activity -->
-        <div class="subsec-hd mt-20">This Week's Activity</div>
-        <div>
-          <div class="act-item">
-            <div class="act-icon">
-              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ff5203"/></svg>
-            </div>
-            <div>
-              <div class="act-source">Fireflies &nbsp;·&nbsp; Apr 14</div>
-              <div class="act-text">Yash confirmed priority, demo requested before Apr 30.</div>
-            </div>
-          </div>
-          <div class="act-item">
-            <div class="act-icon">
-              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#0364ff"/></svg>
-            </div>
-            <div>
-              <div class="act-source">Slack &nbsp;·&nbsp; Apr 16</div>
-              <div class="act-text">Eval pass rate recovered to 93.2% — back above target.</div>
-            </div>
-          </div>
-          <div class="act-item">
-            <div class="act-icon">
-              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
-            </div>
-            <div>
-              <div class="act-source">Jira &nbsp;·&nbsp; Apr 17</div>
-              <div class="act-text">Contract creation merged to staging — sign-off pending.</div>
-            </div>
-          </div>
-          <div class="act-item">
-            <div class="act-icon">
-              <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#ffc0f5"/></svg>
-            </div>
-            <div>
-              <div class="act-source">Loom &nbsp;·&nbsp; Apr 15</div>
-              <div class="act-text">Eval suite updated — CRUD contract record scenarios. <span class="loom-link">Watch (4:12)</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Key Deliverables -->
-        <div class="subsec-hd mt-20">Key Deliverables</div>
-        <div class="tbl">
-          <table>
-            <thead>
-              <tr>
-                <th>Deliverable</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Owner</th>
-                <th>Ticket</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Contract Record Creation</td>
-                <td>Feature</td>
-                <td>Staging, sign-off pending</td>
-                <td>Rahul M.</td>
-                <td style="color:var(--ink4);font-size:12px;">ADOPT-240</td>
-              </tr>
-              <tr>
-                <td>Eval Suite Recovery</td>
-                <td>QA</td>
-                <td>Done — 93.2%</td>
-                <td>Priya K.</td>
-                <td style="color:var(--ink4);font-size:12px;">ADOPT-241</td>
-              </tr>
-              <tr>
-                <td>CRUD: Bulk Procurement Scope</td>
-                <td>Spec</td>
-                <td>Starting Apr 21</td>
-                <td>Rahul M. + Priya K.</td>
-                <td style="color:var(--ink4);">—</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Next Week -->
-        <div class="subsec-hd mt-20">Next Week's Commitments</div>
-        <div id="rv-next-week">
-          <div class="nxt-item">
-            <span class="nxt-num">1.</span>
-            <span class="nxt-text">Production deploy contract record creation</span>
-            <span class="nxt-owner">Rahul M. &nbsp;·&nbsp; Apr 21</span>
-          </div>
-          <div class="nxt-item">
-            <span class="nxt-num">2.</span>
-            <span class="nxt-text">Live demo to Yash Kothari</span>
-            <span class="nxt-owner">Anirudh S. &nbsp;·&nbsp; Apr 22</span>
-          </div>
-          <div class="nxt-item">
-            <span class="nxt-num">3.</span>
-            <span class="nxt-text">Begin bulk procurement scope</span>
-            <span class="nxt-owner">Rahul M. + Priya K. &nbsp;·&nbsp; Apr 24</span>
-          </div>
-          <div class="nxt-item">
-            <span class="nxt-num">4.</span>
-            <span class="nxt-text">Month 4 internal Loom review</span>
-            <span class="nxt-owner">Anirudh S. &nbsp;·&nbsp; Apr 25</span>
-          </div>
-        </div>
-
-        <!-- Blockers -->
-        <div class="subsec-hd mt-20">Blockers</div>
-        <div class="no-blocker">
-          <svg width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" fill="#f7d241"/></svg>
-          No active blockers. Staging sign-off is the only pending gate.
-        </div>
-
-        <!-- Ornamental divider -->
-        <svg class="orn-rule" height="18" viewBox="0 0 660 18" preserveAspectRatio="xMidYMid meet" style="margin-top:24px;">
-          <rect x="0" y="3" width="13" height="13" fill="#ff5203"/>
-          <rect x="18" y="3" width="13" height="13" fill="#0364ff"/>
-          <rect x="36" y="3" width="13" height="13" fill="#f7d241"/>
-          <rect x="54" y="3" width="13" height="13" fill="#ffc0f5"/>
-          <line x1="74" y1="9.5" x2="586" y2="9.5" stroke="#c0a070" stroke-width="1"/>
-          <rect x="590" y="3" width="13" height="13" fill="#ffc0f5"/>
-          <rect x="608" y="3" width="13" height="13" fill="#f7d241"/>
-          <rect x="626" y="3" width="13" height="13" fill="#0364ff"/>
-          <rect x="644" y="3" width="13" height="13" fill="#ff5203"/>
-        </svg>
-
-        <!-- Champion Draft -->
-        <div class="champ" id="rv-champion-note">
-          <span class="champ-label">Draft for Yash Kothari &nbsp;·&nbsp; Head of Product &nbsp;·&nbsp; Spendflo</span>
-          <div class="champ-body">
-            Hi Yash — contract creation is in staging and hits production Monday. Eval rate is back above 93%. Demo is confirmed for Tuesday the 22nd. Talk then.
-          </div>
-          <div class="champ-actions">
-            <button class="btn btn-dark">&#9993; Send to champion</button>
-          </div>
-        </div>
-
-        <!-- Master Prompt -->
-        <button class="prompt-toggle" onclick="togglePrompt()">&#9662; Edit Report Prompt</button>
-        <div class="prompt-panel" id="prompt-panel">
-          <textarea rows="6">You are generating a weekly status report for {{client_name}} from {{engagement_lead}}. Structure: TL;DR referencing BRD delivery plan, Plan vs. Actual table, Activity feed (Fireflies then Slack then Jira then Loom), Deliverables, Next week, Blockers, Champion message. Tone: direct, factual, confident. Champion: {{champion_name}}, {{champion_title}}.</textarea>
-          <button class="btn btn-orange">Regenerate Report</button>
-        </div>
-
-      </div><!-- /rv-body -->
+      </div><!-- end hidden placeholder -->
     </div><!-- /report-viewer -->
 
   </div><!-- /reports-layout -->
@@ -1609,6 +1356,25 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- App JS -->
 <script src="app.js"></script>
+
+<!-- Save Version Modal -->
+<div id="modal-save-version" class="modal-overlay" style="display:none" onclick="if(event.target===this)hideSaveModal()">
+  <div class="modal-panel" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title">Save Version</div>
+      <button class="modal-close" onclick="hideSaveModal()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--ink3);margin:0 0 16px;">Add an optional note to identify this version later.</p>
+      <input type="text" id="save-version-note" placeholder="e.g. Shortened TL;DR, added blocker"
+        style="width:100%;box-sizing:border-box;border:1px solid var(--rule2);padding:10px 14px;font-family:Inter,sans-serif;font-size:14px;background:var(--paper);color:var(--ink);margin-bottom:20px;">
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn" onclick="hideSaveModal()">Cancel</button>
+        <button class="btn btn-orange" onclick="confirmSaveVersion()">Save Version</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

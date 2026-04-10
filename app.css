@@ -782,7 +782,7 @@ body {
   border-top: 1px solid var(--rule2);
 }
 .rh-show-all:hover { color: var(--O); }
-.report-viewer { flex: 1; min-width: 0; }
+.report-viewer { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .rv-action-bar {
   display: flex;
   align-items: center;
@@ -1101,6 +1101,246 @@ body {
   margin-bottom: 10px;
 }
 .prompt-panel textarea:focus { outline: 1px solid var(--O); }
+
+/* ============================================================
+   DOCUMENT CANVAS
+   ============================================================ */
+
+.doc-canvas {
+  background: #e8e0d4;
+  min-height: 600px;
+  padding: 40px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.doc-paper {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--paper);
+  padding: 56px 64px;
+  box-shadow: 0 2px 24px rgba(0,0,0,.10), 0 0 0 1px rgba(192,160,112,.3);
+}
+
+.doc-header {
+  text-align: center;
+  padding: 0 0 32px;
+  border-bottom: 1.5px solid var(--rule);
+  margin-bottom: 32px;
+}
+.doc-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 14px;
+}
+.doc-week {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.doc-period {
+  font-size: 14px;
+  color: var(--ink3);
+}
+
+/* TL;DR contenteditable body */
+.tldr-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink2);
+  min-height: 1.7em;
+}
+
+/* ============================================================
+   DOC TOOLBAR
+   ============================================================ */
+
+.rv-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--paper);
+}
+.rv-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rv-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rv-toolbar .btn { font-size: 12px; padding: 7px 14px; }
+.rv-version-info {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.rv-dirty-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: rgba(255,82,3,.12);
+  color: var(--O);
+  border: 1px solid rgba(255,82,3,.3);
+  padding: 2px 8px;
+}
+
+/* ============================================================
+   AI BAR (repositioned under toolbar)
+   ============================================================ */
+
+.rv-ai-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rule2);
+  background: rgba(3,100,255,.03);
+}
+.rv-ai-bar textarea {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  color: var(--ink2);
+  background: var(--paper);
+  border: 1px solid var(--rule2);
+  padding: 8px 12px;
+  line-height: 1.65;
+  resize: vertical;
+  min-height: 56px;
+}
+.rv-ai-bar textarea:focus { outline: 1px solid var(--B); }
+.rv-ai-actions { display: flex; flex-direction: column; gap: 6px; }
+.rv-ai-actions .btn { font-size: 12px; padding: 7px 14px; white-space: nowrap; }
+
+/* ============================================================
+   INLINE TABLE CELL EDITING
+   ============================================================ */
+
+.editable-cell {
+  cursor: text;
+  position: relative;
+  transition: background .1s;
+}
+.editable-cell:hover {
+  background: rgba(255,82,3,.04);
+  outline: 1px dashed rgba(255,82,3,.25);
+}
+.inline-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: 1px solid var(--O);
+  background: rgba(255,82,3,.04);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  color: var(--ink);
+  padding: 6px 8px;
+  min-width: 60px;
+}
+.inline-select {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: 1px solid var(--O);
+  background: rgba(255,82,3,.04);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+/* Contenteditable sections */
+[contenteditable="true"] {
+  outline: none;
+  transition: background .12s;
+}
+[contenteditable="true"]:hover {
+  background: rgba(255,82,3,.025);
+}
+[contenteditable="true"]:focus {
+  background: rgba(255,82,3,.04);
+  outline: 1px solid rgba(255,82,3,.25);
+}
+
+/* Editable list text spans */
+.editable-text {
+  cursor: text;
+  border-radius: 2px;
+  padding: 1px 3px;
+  margin: -1px -3px;
+  display: inline-block;
+  transition: background .1s;
+}
+.editable-text:hover {
+  background: rgba(255,82,3,.06);
+  outline: 1px dashed rgba(255,82,3,.3);
+}
+
+/* ============================================================
+   SIDEBAR RESTORE BUTTON
+   ============================================================ */
+
+.rh-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.rh-restore-btn {
+  font-size: 10px;
+  padding: 3px 8px;
+  opacity: 0;
+  transition: opacity .15s;
+  pointer-events: none;
+}
+.rh-item:hover .rh-restore-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ============================================================
+   LOADING SKELETON
+   ============================================================ */
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position:  800px 0; }
+}
+.skel-line,
+.skel-block {
+  background: linear-gradient(90deg, var(--rule2) 25%, rgba(192,160,112,.4) 50%, var(--rule2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 2px;
+  margin-bottom: 12px;
+}
+.skel-title  { height: 32px; width: 60%; margin: 0 auto 16px; }
+.skel-sub    { height: 14px; width: 40%; margin: 0 auto 32px; }
+.skel-block  { height: 80px; }
+.skel-block-short { height: 48px; width: 70%; }
 
 /* MODAL */
 .modal-overlay {

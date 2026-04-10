@@ -1,60 +1,69 @@
 @media print {
+  /* Hide everything except the document paper */
   .stripe,
   .global-nav,
   .breadcrumb,
   .tabs-row,
-  .rv-action-bar,
-  .rv-save-bar,
+  .rv-toolbar,
   .rv-ai-bar,
   .prompt-toggle,
   .prompt-panel,
   .champ-actions,
   .colophon-action,
-  #view-admin,
-  #view-comms,
-  #view-user-control,
-  #view-integrations,
-  #view-inbox,
   .report-history,
-  .int-grid,
-  .inbox-add-panel,
-  #inbox-list,
-  .no-print {
-    display: none !important;
-  }
+  #doc-skeleton,
+  .no-print { display: none !important; }
+
+  /* Show only the reports view */
+  .view { display: none !important; }
+  #view-reports { display: block !important; }
 
   body {
     background: white;
     font-size: 13px;
+    margin: 0;
   }
-
-  .view { display: block !important; }
-  #view-reports { display: block !important; }
-  #view-project { display: none !important; }
 
   .reports-layout {
     display: block;
     border: none;
   }
 
-  .report-viewer {
-    width: 100%;
+  .report-viewer { width: 100%; }
+
+  /* Strip the canvas — paper prints on white */
+  .doc-canvas {
+    background: white;
+    padding: 0;
+    min-height: 0;
   }
 
-  .rv-body {
+  .doc-paper {
+    max-width: 100%;
+    box-shadow: none;
     padding: 0;
+    margin: 0;
   }
+
+  /* Remove edit affordances */
+  [contenteditable] { outline: none !important; }
+  .editable-cell:hover { outline: none !important; background: none !important; }
+  .editable-text:hover { outline: none !important; background: none !important; }
+
+  /* Hide any open inline editors */
+  input.inline-input,
+  select.inline-select { display: none !important; }
+
+  /* Page breaks */
+  .tbl          { page-break-inside: avoid; }
+  .champ        { page-break-inside: avoid; }
+  .nxt-item     { page-break-inside: avoid; }
+  .blocker-item { page-break-inside: avoid; }
 
   .page-wrap-project {
     max-width: 100%;
     padding: 0;
   }
 
-  .tbl {
-    page-break-inside: avoid;
-  }
-
-  .champ {
-    page-break-inside: avoid;
-  }
+  @page { margin: 1.5cm 1.8cm; }
 }
